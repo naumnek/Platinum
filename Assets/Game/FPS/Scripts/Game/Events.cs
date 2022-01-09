@@ -9,8 +9,10 @@ namespace Unity.FPS.Game
     {
         public static ObjectiveUpdateEvent ObjectiveUpdateEvent = new ObjectiveUpdateEvent();
         public static AllObjectivesCompletedEvent AllObjectivesCompletedEvent = new AllObjectivesCompletedEvent();
+        public static OnExitMenu OnExitMenu = new OnExitMenu();
         public static GameOverEvent GameOverEvent = new GameOverEvent();
         public static PlayerDeathEvent PlayerDeathEvent = new PlayerDeathEvent();
+        public static RoomMatchedEvent RoomMatchedEvent = new RoomMatchedEvent();
         public static EnemyKillEvent EnemyKillEvent = new EnemyKillEvent();
         public static PickupEvent PickupEvent = new PickupEvent();
         public static AmmoPickupEvent AmmoPickupEvent = new AmmoPickupEvent();
@@ -33,8 +35,11 @@ namespace Unity.FPS.Game
     {
         public bool Win;
     }
+    public class OnExitMenu : GameEvent {}
 
     public class PlayerDeathEvent : GameEvent { }
+
+    public class RoomMatchedEvent : GameEvent { }
 
     public class EnemyKillEvent : GameEvent
     {

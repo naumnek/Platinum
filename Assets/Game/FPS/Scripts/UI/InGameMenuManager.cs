@@ -3,6 +3,8 @@ using Unity.FPS.Gameplay;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
+using naumnek.FPS;
 
 namespace Unity.FPS.UI
 {
@@ -26,15 +28,18 @@ namespace Unity.FPS.UI
         [Tooltip("Toggle component for framerate display")]
         public Toggle FramerateToggle;
 
-        [Tooltip("GameObject for the controls")]
-        public GameObject ControlImage;
+        [Tooltip("Inputfield for the show seed")]
+        public TMP_InputField Seed;
 
+        public string LevelSeed;
         PlayerInputHandler m_PlayerInputsHandler;
         Health m_PlayerHealth;
         FramerateCounter m_FramerateCounter;
 
         void Start()
         {
+            LevelSeed = FileManager.GetSeed().ToString();
+
             m_PlayerInputsHandler = FindObjectOfType<PlayerInputHandler>();
             DebugUtility.HandleErrorIfNullFindObject<PlayerInputHandler, InGameMenuManager>(m_PlayerInputsHandler,
                 this);
@@ -75,12 +80,11 @@ namespace Unity.FPS.UI
                 Cursor.visible = true;
             }
 
-            if (Input.GetButtonDown(GameConstants.k_ButtonNamePauseMenu)
-                || (MenuRoot.activeSelf && Input.GetButtonDown(GameConstants.k_ButtonNameCancel)))
+            if (Input.GetButtonDown(GameConstants.k_ButtonNamePauseMenu) || (MenuRoot.activeSelf && Input.GetButtonDown(GameConstants.k_ButtonNameCancel)))
             {
-                if (ControlImage.activeSelf)
+                if (Seed.gameObject.activeSelf)
                 {
-                    ControlImage.SetActive(false);
+                    Seed.gameObject.SetActive(false);
                     return;
                 }
 
@@ -96,6 +100,12 @@ namespace Unity.FPS.UI
                     LookSensitivitySlider.Select();
                 }
             }
+        }
+
+        public void Exit()
+        {
+            EventManager.Broadcast(Events.OnExitMenu);
+            SetPauseMenuActivation(false);
         }
 
         public void ClosePauseMenu()
@@ -146,9 +156,14 @@ namespace Unity.FPS.UI
             m_FramerateCounter.UIText.gameObject.SetActive(newValue);
         }
 
-        public void OnShowControlButtonClicked(bool show)
+        public void OnShowSeed()
         {
-            ControlImage.SetActive(show);
+            Seed.gameObject.SetActive(!Seed.gameObject.activeSelf);
+            Seed.text = LevelSeed;
+        }
+        public void SetSeed()
+        {
+            Seed.text = LevelSeed;
         }
     }
 }

@@ -33,15 +33,16 @@ namespace Unity.FPS.Gameplay
 
         void OnEnemyKilled(EnemyKillEvent evt)
         {
-            if (IsCompleted)
-                return;
+            if (IsCompleted) return;
 
             m_KillTotal++;
 
             if (MustKillAllEnemies)
                 KillsToCompleteObjective = evt.RemainingEnemyCount + m_KillTotal;
 
+            print("Убить: " + KillsToCompleteObjective);
             int targetRemaining = MustKillAllEnemies ? evt.RemainingEnemyCount : KillsToCompleteObjective - m_KillTotal;
+            print("Моб убит: " + targetRemaining);
 
             // update the objective text according to how many enemies remain to kill
             if (targetRemaining == 0)

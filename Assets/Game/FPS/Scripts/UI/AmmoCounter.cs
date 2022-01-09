@@ -9,6 +9,8 @@ namespace Unity.FPS.UI
     [RequireComponent(typeof(FillBarColorChange))]
     public class AmmoCounter : MonoBehaviour
     {
+        public Slider AmmoSlider;
+
         [Tooltip("CanvasGroup to fade the ammo UI")]
         public CanvasGroup CanvasGroup;
 
@@ -83,8 +85,8 @@ namespace Unity.FPS.UI
         void Update()
         {
             float currenFillRatio = m_Weapon.CurrentAmmoRatio;
-            AmmoFillImage.fillAmount = Mathf.Lerp(AmmoFillImage.fillAmount, currenFillRatio,
-                Time.deltaTime * AmmoFillMovementSharpness);
+            AmmoSlider.value = currenFillRatio;
+            //AmmoFillImage.fillAmount = Mathf.Lerp(AmmoFillImage.fillAmount, currenFillRatio, Time.deltaTime * AmmoFillMovementSharpness);
 
             BulletCounter.text = m_Weapon.GetCarriedPhysicalBullets().ToString();
 

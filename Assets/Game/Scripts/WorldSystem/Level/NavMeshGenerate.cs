@@ -11,11 +11,10 @@ namespace naumnek.FPS
 
         public static void Build()
         {
-            print("Build Mesh");
             instance.GetComponent<NavMeshSurface>().BuildNavMesh();
         }
 
-        private void Start()
+        private void Awake()
         {
             instance = this;
         }

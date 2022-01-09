@@ -19,6 +19,7 @@ namespace naumnek.FPS
         public static void Load()
         {
             instance.general.SetActive(true);
+            NavMeshGenerate.Build();
         }
     }
 }

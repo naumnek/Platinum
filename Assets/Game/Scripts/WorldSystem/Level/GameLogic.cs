@@ -5,17 +5,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
 using System.Linq;
+using Unity.FPS.Game;
 
 namespace naumnek.FPS
 {
     public class GameLogic : MonoBehaviour
     {
+        [Header("Options Room")]
+        public string Title = "All enemies destroyed";
+        public float DelayBeforeDisplay = 0.5f;
+
         [Header("Other")]
         public Timer timer;
         EnemySpawner m_EnemySpawner;
         bool load = true;
         private static GameLogic instance;
-
 
         public static GameLogic GetGameLogic()
         {
@@ -25,26 +29,36 @@ namespace naumnek.FPS
         void Start()
         {
             instance = this;
+            EventManager.AddListener<RoomMatchedEvent>(OnRoomMatched);
         }
 
-        public Transform SpawnObject(GameObject prefab, float x, float y)
+        public void OnRoomMatched(RoomMatchedEvent evt)
+        {
+            DisplayMessageEvent displayMessage = Events.DisplayMessageEvent;
+            displayMessage.Message = Title;
+            displayMessage.DelayBeforeDisplay = DelayBeforeDisplay;
+            EventManager.Broadcast(displayMessage);
+        }
+
+        public static Transform SpawnObject(GameObject prefab, float x, float y)
         {
             return Instantiate(prefab, new Vector2(x, y), Quaternion.identity).transform;
         }
 
-        public void SpawnObject(ref List<Transform> list, GameObject prefab, float x, float y)
+        public static void SpawnObject(ref List<Transform> list, GameObject prefab, float x, float y)
         {
             list.Add(Instantiate(prefab, new Vector2(x, y), Quaternion.identity).transform);
         }
 
-        public void SpawnObject(ref List<Transform> list, GameObject prefab, Transform parent, float x, float y, float z)
+        public static Transform SpawnObject(GameObject prefab, Transform parent, float x, float y, float z)
         {
-            GameObject obj = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
-            obj.transform.SetParent(parent, false);
-            list.Add(obj.transform);
+            GameObject obj = Instantiate(prefab, parent);
+            obj.transform.position = new Vector3(x, y, z);
+            obj.transform.SetParent(parent);
+            return obj.transform;
         }
 
-        public void SpawnObject(ref List<Transform> list, GameObject prefab, Transform parent, string name, float x, float y)
+        public static void SpawnObject(ref List<Transform> list, GameObject prefab, Transform parent, string name, float x, float y)
         {
             Transform parent2 = (new GameObject(name)).transform;
             parent2.position = new Vector2(x, y);
@@ -54,7 +68,7 @@ namespace naumnek.FPS
             list.Add(parent2);
         }
 
-        public void RemoveObject(ref List<Transform> list, Transform target)
+        public static void RemoveObject(ref List<Transform> list, Transform target)
         {
             list.Remove(target);
             Destroy(target.gameObject);

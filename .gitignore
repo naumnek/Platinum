@@ -19,6 +19,13 @@
 #ignore import packages
 /[Aa]ssets/Import*
 
+#ignore import packages
+/[Aa]ssets/Game/FPS/Animation*
+/[Aa]ssets/Game/FPS/Art*
+/[Aa]ssets/Game/FPS/Audio*
+/[Aa]ssets/Game/FPS/Tutorials*
+/[Aa]ssets/Sci-Fi UI*
+
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
 

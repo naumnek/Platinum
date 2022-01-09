@@ -7,16 +7,18 @@ namespace naumnek.FPS
 {
     public class ScreenLoad : MonoBehaviour
     {
+        public FileManager fileManager;
+
         public void OnAnimationOver(string v)
         {
-            FileManager fm = FileManager.GetFileManager();
+            if(fileManager == null) fileManager = FileManager.GetFileManager();
             switch (v)
             {
                 case ("Unvisibily"):
-                    fm.EndLoadScene();
+                    fileManager.EndLoadScene();
                     break;
                 case ("Visibily"):
-                    fm.StartLoadScene();
+                    fileManager.StartLoadScene();
                     break;
             }
         }

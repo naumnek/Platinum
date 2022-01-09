@@ -7,6 +7,8 @@ namespace Unity.FPS.UI
 {
     public class PlayerHealthBar : MonoBehaviour
     {
+        public Slider PlayerHealth;
+
         [Tooltip("Image component dispplaying current health")]
         public Image HealthFillImage;
 
@@ -27,7 +29,8 @@ namespace Unity.FPS.UI
         void Update()
         {
             // update health bar value
-            HealthFillImage.fillAmount = m_PlayerHealth.CurrentHealth / m_PlayerHealth.MaxHealth;
+            PlayerHealth.value = m_PlayerHealth.CurrentHealth / m_PlayerHealth.MaxHealth;
+            //HealthFillImage.fillAmount = m_PlayerHealth.CurrentHealth / m_PlayerHealth.MaxHealth;
         }
     }
 }

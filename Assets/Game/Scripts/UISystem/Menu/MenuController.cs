@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using TMPro;
 using System.IO;
 using System;
-using System.Globalization;
+using System.Linq;
 
 
 namespace naumnek.FPS
@@ -15,13 +16,17 @@ namespace naumnek.FPS
     {
         public GameObject startMenu;
         public GameObject[] allMenu;
-        public List<Slider> allSlider = new List<Slider>();
-        public List<Toggle> allToggle = new List<Toggle>();
+        public Slider MusicVolume;
+        public TMP_Dropdown GraphicsQuality;
+        public TMP_Dropdown ScreenResolution;
+        public Toggle FullScreen;
+        public TMP_InputField Seed;
         public AudioMixer Music;
-        public FileManager _fileManager;
         public bool load = true;
         //PRIVATE
+        private List<Resolution> ScreenResolutions = new List<Resolution>();
         private static MenuController instance;
+        private FileManager _fileManager;
 
         public static MenuController GetMenuController()
         {
@@ -31,77 +36,89 @@ namespace naumnek.FPS
         void Start() //запускаем самый первый процесс
         {
             instance = this;
-            LoadSettings();
+            LoadUI();
         }
 
         private void Update()
         {
             if (!FileManager.load != startMenu.activeSelf && load)
             {
-                print("Load3: " + FileManager.load);
                 load = false;
                 startMenu.SetActive(true);
             }
         }
 
+        private void LoadUI()
+        {
+            ScreenResolutions.AddRange(Screen.resolutions);
+            foreach (Resolution resolution in ScreenResolutions)
+            {
+                ScreenResolution.options.Add(new TMP_Dropdown.OptionData(resolution.ToString()));
+            }
+            if (PlayerPrefs.GetString("CheckSave") == "yes") LoadSettings();
+        }
 
         private void LoadSettings() //загружаем информацию из файлов
         {
-            foreach (Slider copy in allSlider)
-            {
-                copy.value = PlayerPrefs.GetFloat(copy.name);
-                copy.gameObject.transform.GetChild(0).GetComponent<Text>().text = copy.value.ToString();
-            }
-            foreach (Toggle copy in allToggle)
-            {
-                if (PlayerPrefs.GetString(copy.name) == "True") { copy.isOn = true; };
-                if (PlayerPrefs.GetString(copy.name) == "False") { copy.isOn = false; };
-            }
-            Music.SetFloat("musicVolume", -PlayerPrefs.GetFloat("MusicVolume"));
-            if (PlayerPrefs.GetString("IsFullScreen") == "true") { Screen.fullScreen = true; };
-            if (PlayerPrefs.GetString("IsFullScreen") == "False") { Screen.fullScreen = false; };
-            QualitySettings.SetQualityLevel((int)PlayerPrefs.GetFloat("SelectQuality"));
+            MusicVolume.value = PlayerPrefs.GetFloat("MusicVolume");
+            GraphicsQuality.value = PlayerPrefs.GetInt("GraphicsQuality");
+            ScreenResolution.value = PlayerPrefs.GetInt("ScreenResolution");
+            FullScreen.isOn = PlayerPrefs.GetString("FullScreen") == "True";
+            print("EndLoad");
         }
 
         private void SaveSettings() //сохраняем значения объектов в файл
         {
-            foreach (Slider copy in allSlider)
-            {
-                PlayerPrefs.SetFloat(copy.name, copy.value);
-            }
-            foreach (Toggle copy in allToggle)
-            {
-                PlayerPrefs.SetString(copy.name, copy.isOn.ToString());
-            }
+            PlayerPrefs.SetFloat("MusicVolume", MusicVolume.value);
+            PlayerPrefs.SetInt("GraphicsQuality", GraphicsQuality.value);
+            PlayerPrefs.SetInt("ScreenResolution", ScreenResolution.value);
+            PlayerPrefs.SetString("FullScreen", FullScreen.isOn.ToString());
             PlayerPrefs.SetString("CheckSave", "yes");
-            print("Save");
+            print("EndSave");
+        }
+
+        public void SetMusicVolume(Slider slider) //установка громкости звука
+        {
+            slider.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (slider.value * 4).ToString();
+            Music.SetFloat("musicVolume", -(25 - slider.value));
+        }
+        public void SetQualitySettings(TMP_Dropdown dropdown)
+        {
+            QualitySettings.SetQualityLevel(dropdown.value, true);
+        }
+
+        public void SetScreenResolution(TMP_Dropdown ResolutionDropdown) // вкл/выкл полноэкранный режим
+        {
+            for (int i = 0; i < ScreenResolutions.Count; i++)
+            {
+                if (i == ResolutionDropdown.value) Screen.SetResolution(ScreenResolutions[i].width, ScreenResolutions[i].height, Screen.fullScreen);
+            }
+        }
+
+        public void SetFullScreen(Toggle toggle) // вкл/выкл полноэкранный режим
+        {
+            Screen.fullScreen = toggle.isOn;
         }
 
         public void SaveButton() //кнопка сохранения
         {
             SaveSettings();
-            LoadSettings();
-        }
-
-        public void Language(string lang)
-        {
-
-        }
-
-        public void Slider(Slider slider)
-        {
-            slider.gameObject.transform.GetChild(0).GetComponent<Text>().text = slider.value.ToString(); //находим текстовый дочерний обьект и приваеваем ему значение слайдера
-        }
-
-        public void MusicVolume(Slider slider) //установка громкости звука
-        {
-            slider.gameObject.transform.GetChild(0).GetComponent<Text>().text = (100 - (slider.value * 2)).ToString();
-            Music.SetFloat("musicVolume", -slider.value);
         }
 
         public void Scenes(string scene) //загрузка уровня Tutorial
         {
-            FileManager.SwitchScene(scene);
+            foreach (GameObject copy in allMenu)
+            {
+                copy.gameObject.SetActive(false);
+            }
+            if (Seed.text == "" || !int.TryParse(Seed.text, out _))
+            {
+                FileManager.LoadScene(scene, 0);
+            }
+            else
+            {
+                FileManager.LoadScene(scene, Convert.ToInt32(Seed.text));
+            }
             FileManager.load = true;
         }
 
@@ -118,23 +135,6 @@ namespace naumnek.FPS
         {
             Application.Quit();
         }
-
-        public void FullScreenToggle(Toggle toggle) // вкл/выкл полноэкранный режим
-        {
-            Screen.fullScreen = toggle.isOn;
-        }
-
-        /*public void JoystickToggle(Toggle toggle) // вкл/выкл полноэкранный режим
-        {
-            foreach (GameObject copy in AllJoystick)
-            {
-                if (copy != AllJoystick[0])
-                {
-                    copy.gameObject.SetActive(toggle.isOn);
-                }
-            }
-        }*/
-
     }
 }
 

@@ -10,12 +10,12 @@ namespace naumnek.FPS
     {
         [Header("General")]
         public int StartVariant = 1;
+        public Transform EnemyContainer;
         public GameObject prefabPlayer;
         public List<GameObject> prefabEnemys = new List<GameObject>();
+        public Transform emptyPlayer;
+        public Transform m_BodyPlayer;
         public bool load = false;
-        private Transform emptyEnemys;
-        private Transform m_BodyPlayer;
-        private GameLogic m_GameLogic;
         [Header("Enemys Options")]
         public bool spawnEnemy = false;
         public int min_enemy = 1;
@@ -36,85 +36,70 @@ namespace naumnek.FPS
         {
             return instance.GetComponent<EnemySpawner>();
         }
+        public static void InitializePlayer(Transform point)
+        {
+            instance.SetSpawnerPlayer(point);
+        }
 
-        private void Start()
+
+        public static Transform ActivateSpawner(Transform spawner)
+        {
+            return instance.SpawnEnemys(spawner);
+        }
+        public void SetSpawnerPlayer(Transform point)
+        {
+            listEnemys.Add(m_BodyPlayer);
+            m_BodyPlayer.position = point.position;
+            m_BodyPlayer.SetParent(EnemyContainer);
+            m_BodyPlayer.gameObject.SetActive(true);
+            spawnEnemy = true;
+        }
+
+        private Transform SpawnEnemys(Transform spawner)
+        {
+            GameObject enemy = prefabEnemys[ran.Next(0, prefabEnemys.Count - 1)];
+            float x = spawner.position.x + ran.Next(minX_enemy, maxX_enemy);
+            float y = spawner.position.y + ran.Next(minY_enemy, maxY_enemy);
+            float z = spawner.position.z + ran.Next(minZ_enemy, maxZ_enemy);
+            //print("Spawn: " + enemy.name + " - " + target.name + " - " + x + " - " + y + " - " + z + " - )");
+            Transform obj = GameLogic.SpawnObject(enemy, spawner, x, y, z);
+            listEnemys.Add(obj);
+            return obj;
+        }
+
+        void RemoveEnemy(Transform target)
+        {
+            GameLogic.RemoveObject(ref listEnemys, target);
+        }
+
+        void Awake()
         {
             instance = this;
         }
 
-        public void MainStart()
+        public static void MainStart()
         {
-            print("Point_2");
-            switch (StartVariant)
+            switch (instance.StartVariant)
             {
                 case (1):
-                    start1();
+                    instance.start1();
                     break;
                 case (2):
-                    start2();
+                    instance.start2();
                     break;
             }
         }
 
         private void start1()
         {
-            m_GameLogic = GameLogic.GetGameLogic();
-            Transform spawn = GameObject.FindGameObjectWithTag("Spawnpoint").transform;
-            emptyEnemys = gameObject.transform;
-            m_GameLogic.SpawnObject(ref listEnemys, prefabPlayer, emptyEnemys, spawn.position.x, spawn.position.y, spawn.position.z);
+            listEnemys.Add(GameLogic.SpawnObject(prefabPlayer, EnemyContainer, emptyPlayer.position.x, emptyPlayer.position.y, emptyPlayer.position.z));
             m_BodyPlayer = listEnemys.First();
             spawnEnemy = true;
 
         }
         private void start2()
         {
-            m_GameLogic = GameLogic.GetGameLogic();
-            Transform spawn = GameObject.FindGameObjectWithTag("Spawnpoint").transform;
-            emptyEnemys = gameObject.transform;
-            listEnemys.Add(GameObject.FindGameObjectWithTag("Player").transform);
-            m_BodyPlayer = listEnemys.First();
-            m_BodyPlayer.position = spawn.position;
-            m_BodyPlayer.GetComponent<CharacterController>().enabled = true;
-            spawnEnemy = true;
-        }
-
-        void Update()
-        {
-            if (spawnEnemy == true)
-            {
-                CountEnemy();
-            }
-        }
-
-
-        private void CountEnemy()
-        {
-            if (listEnemys.Count < min_enemy)
-            {
-                LogicEnemy(2, listEnemys.Last());
-            }
-            if (listEnemys.Count > max_enemy)
-            {
-                LogicEnemy(1, listEnemys[1]);
-
-            }
-        }
-
-        private void LogicEnemy(int id, Transform target)
-        {
-            switch (id)
-            {
-                case (1):
-                    m_GameLogic.RemoveObject(ref listEnemys, target);
-                    break;
-                case (2):
-                    GameObject enemy = prefabEnemys[ran.Next(0, prefabEnemys.Count - 1)];
-                    float x = target.position.x + ran.Next(minX_enemy, maxX_enemy);
-                    float y = target.position.y + ran.Next(minY_enemy, maxY_enemy);
-                    float z = target.position.z + ran.Next(minZ_enemy, maxZ_enemy);
-                    m_GameLogic.SpawnObject(ref listEnemys, enemy, emptyEnemys, x, y, z);
-                    break;
-            }
+            LoadManager.Load();
         }
     }
 

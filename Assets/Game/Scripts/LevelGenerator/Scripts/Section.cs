@@ -1,11 +1,17 @@
 ﻿using System.Linq;
 using LowLevelGenerator.Scripts.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
+using naumnek.FPS;
+using Unity.FPS.Game;
+using Unity.FPS.AI;
 
 namespace LowLevelGenerator.Scripts
 {
     public class Section : MonoBehaviour
     {
+        public bool Matched = true;
+
         /// <summary>
         /// Section tags
         /// </summary>
@@ -19,26 +25,64 @@ namespace LowLevelGenerator.Scripts
         /// <summary>
         /// Exits node in hierarchy
         /// </summary>
-        public Exits Exits;
+        public List<Transform> Exits = new List<Transform>();
+        //check end generation exits in the section 
+        public bool EndGenerateAnnexes = false;
 
-        /// <summary>
-        /// Bounds node in hierarchy
-        /// </summary>
-        public Bounds Bounds;
+        public BoundSection Bound;
+
+        public GameObject ParentCollider;
+
+        public GameObject Structure;
+
+        public Transform Spawner;
 
         /// <summary>
         /// Chances of the section spawning a dead end
         /// </summary>
         public int DeadEndChance;
 
-        protected LevelGenerator LevelGenerator;
+        [HideInInspector]
+        public List<DoorExit> Doors = new List<DoorExit>();
+        [HideInInspector]
+        public List<DeadEnd> DeadEnds = new List<DeadEnd>();
+        [HideInInspector]
+        public List<Section> FlankSections = new List<Section>();
+        [HideInInspector]
+        public List<DoorExit> FlankDoors = new List<DoorExit>();
+        [HideInInspector]
+        public List<DeadEnd> RandomDeadEnds = new List<DeadEnd>();
+        [HideInInspector]
+        public List<Transform> Enemys = new List<Transform>();
+
+        Transform ContainerDoors;
+        Transform ContainerDeadEnds;
+        protected LevelGenerator m_LevelGenerator;
         protected int order;
-        
+
+        private void Awake()
+        {
+            Bound.section = this;
+        }
+
         public void Initialize(LevelGenerator levelGenerator, int sourceOrder)
         {
-            LevelGenerator = levelGenerator;
-            transform.SetParent(LevelGenerator.Container);
-            LevelGenerator.RegisterNewSection(this);
+            Bound = GetComponentInChildren<BoundSection>();
+            m_LevelGenerator = levelGenerator;
+
+            ContainerDoors = new GameObject("Doors").transform;
+            ContainerDoors.SetParent(this.transform);
+            ContainerDeadEnds = new GameObject("DeadEnds").transform;
+            ContainerDeadEnds.SetParent(this.transform);
+
+            if (Tags.First() == "spawn") EnemySpawner.InitializePlayer(Spawner);
+            if(Tags.First() == "room")
+            {
+                Transform obj = EnemySpawner.ActivateSpawner(Spawner);
+                obj.GetComponent<EnemyController>().SpawnSection = this;
+                Enemys.Add(obj);
+            }
+
             order = sourceOrder + 1;
 
             GenerateAnnexes();
@@ -46,47 +90,145 @@ namespace LowLevelGenerator.Scripts
 
         protected void GenerateAnnexes()
         {
-            if (CreatesTags.Any())
+            foreach (Transform copy in Exits)
             {
-                foreach (var e in Exits.ExitSpots)
+                if (m_LevelGenerator.LevelSize > 0 && order < m_LevelGenerator.MaxAllowedOrder)
                 {
-                    if (LevelGenerator.LevelSize > 0 && order < LevelGenerator.MaxAllowedOrder)
-                        if (RandomService.RollD100(DeadEndChance))
-                            PlaceDeadEnd(e);
-                        else
-                            GenerateSection(e);
+                    if (DeadEndChance != 0 && RandomService.RollD100(DeadEndChance))
+                    {
+                        PlaceDeadEnd(copy,true); 
+                    }
                     else
-                        PlaceDeadEnd(e);
+                    {
+                        GenerateSection(copy);
+                    }
+                }
+                else 
+                {
+                    PlaceDeadEnd(copy, false); 
                 }
             }
+            EndGenerateAnnexes = true;
+            m_LevelGenerator.CheckRandomSection();
         }
 
-        protected void GenerateSection(Transform exit)
+        public void GenerateSection(Transform exit)
         {
-            var candidate = IsAdvancedExit(exit)
-                ? BuildSectionFromExit(exit.GetComponent<AdvancedExit>())
-                : BuildSectionFromExit(exit);
-                
-            if (LevelGenerator.IsSectionValid(candidate.Bounds, Bounds))
+            Section section = Instantiate(m_LevelGenerator.PickSectionWithTag(CreatesTags), exit);
+            if (m_LevelGenerator.IsSectionValid(section.Bound, Bound))
             {
-                candidate.Initialize(LevelGenerator, order);
+                m_LevelGenerator.LevelSize--;
+                section.transform.SetParent(m_LevelGenerator.SectionContainer);
+                m_LevelGenerator.RegisterNewSection(section);
+                section.FlankSections.Add(this);
+                FlankSections.Add(section);
+                PlaceDoor(exit, section);
+                section.Initialize(m_LevelGenerator, order);
             }
             else
             {
-                Destroy(candidate.gameObject);
-                PlaceDeadEnd(exit);
+                Destroy(section.gameObject);
+                PlaceDeadEnd(exit,false);
             }
         }
 
         //создаем на месте полученого Transform exit одну из стен в DeadEnds и заносим её в список DeadEndColliders 
-        protected void PlaceDeadEnd(Transform exit) => Instantiate(LevelGenerator.DeadEnds.PickOne(), exit).Initialize(LevelGenerator);
+        protected void PlaceDeadEnd(Transform exit, bool random)
+        {
+            DeadEnd obj = Instantiate(m_LevelGenerator.DeadEnds.PickOne(), exit);
+            obj.transform.SetParent(ContainerDeadEnds);
+            DeadEnds.Add(obj);
+            if (random) RandomDeadEnds.Add(obj);
+        }
 
-        //проверяем обьект(через его Transform) на наличие компонента AdvancedExit
-        protected bool IsAdvancedExit(Transform exit) => exit.GetComponent<AdvancedExit>() != null;
+        //создаем на месте полученого Transform exit одну из стен в DeadEnds и заносим её в список DeadEndColliders 
+        protected void PlaceDoor(Transform exit, Section section)
+        {
+            DoorExit obj = Instantiate(m_LevelGenerator.Doors.PickOne(), exit);
+            obj.transform.SetParent(ContainerDoors);
+            Doors.Add(obj);
+            obj.Sections.Add(this);
+            obj.Sections.Add(FlankSections.Last());
+            FlankDoors.Add(obj);
+            section.FlankDoors.Add(obj);
+        }
 
-        //создаем на месте полученого Transform exit раздел с таким же тегом что и CreatesTags в DeadEnds и заносим её в список DeadEndColliders 
-        protected Section BuildSectionFromExit(Transform exit) => Instantiate(LevelGenerator.PickSectionWithTag(CreatesTags), exit).GetComponent<Section>();
+        public void OnEnemyInSectionKill(Transform enemy)
+        {
+            Enemys.Remove(enemy);
+            if(Enemys.Count == 0 && !Matched)
+            {
+                EventManager.Broadcast(Events.RoomMatchedEvent);
+                Matched = true;
+                LockedAllDoors(false);
+            }
+        }
+        private void LockedIsOpenDoors(DoorExit openDoor, bool action)
+        {
+            for (int ii = 0; ii < FlankDoors.Count(); ii++)
+            {
+                if(FlankDoors[ii] != openDoor) FlankDoors[ii].LockedRoom = action;
+            }
+            for (int ii = 0; ii < Doors.Count(); ii++)
+            {
+                if(Doors[ii] != openDoor) Doors[ii].LockedRoom = action;
+            }
+        }
 
-        protected Section BuildSectionFromExit(AdvancedExit exit) => Instantiate(LevelGenerator.PickSectionWithTag(exit.CreatesTags), exit.transform).GetComponent<Section>();
+        private void LockedAllDoors(bool action)
+        {
+            for (int ii = 0; ii < FlankDoors.Count(); ii++)
+            {
+                FlankDoors[ii].LockedRoom = action;
+            }
+            for (int ii = 0; ii < Doors.Count(); ii++)
+            {
+                Doors[ii].LockedRoom = action;
+            }
+        }
+
+        public void SetActiveSection(DoorExit door, bool action)
+        {
+            List<Section> playerSection = new List<Section>();
+            playerSection.AddRange(m_LevelGenerator.RegisteredSections.Where(s => s.Bound.player || s.FlankDoors.Any(d => d.isClosed) || s.Doors.Any(d => d.isClosed)));
+
+            List<Section> section = new List<Section>();
+            section.AddRange(door.Sections.Where(s => !playerSection.Any(ss => ss == s)));
+            for (int i = 0; i < section.Count(); i++)
+            {
+                section[i].Structure.SetActive(action);
+                //
+                for (int ii = 0; ii < section[i].DeadEnds.Count(); ii++)
+                {
+                    section[i].DeadEnds[ii].Structure.SetActive(action);
+                }
+                //
+                for (int ii = 0; ii < section[i].FlankDoors.Count(); ii++)
+                {
+                    if (action || !playerSection.Any(s => s.FlankDoors.Any(d => d == section[i].FlankDoors[ii])))
+                    {
+                        section[i].FlankDoors[ii].Structure.SetActive(action);
+                        section[i].FlankDoors[ii].enabled = action;
+                    }
+                }
+            }
+            Section triggerPlayerSection = m_LevelGenerator.RegisteredSections.Where(s => s.Bound.player).First();
+            if (action)
+            {
+                Section notTriggerPlayerSection = section.Where(s => s != triggerPlayerSection).First();
+                if (!notTriggerPlayerSection.Matched)
+                {
+                    notTriggerPlayerSection.LockedIsOpenDoors(door, true);
+                }
+            }
+            else
+            {
+                if (!triggerPlayerSection.Matched)
+                {
+                    triggerPlayerSection.LockedAllDoors(true);
+                }
+                door.Locked = false;
+            }
+        }
     }
 }

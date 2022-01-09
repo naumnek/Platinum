@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-/*using UnityEngine.Audio;
-using UnityEngine.UI;
-using System.IO;*/
 using System;
 using UnityEngine.UI;
+using LowLevelGenerator.Scripts.Helpers;
+using TMPro;
 
 
 namespace naumnek.FPS
@@ -19,12 +18,11 @@ namespace naumnek.FPS
         [Tooltip("Versions determines which scripts the file manager should use")]
         public string GameVersion = "fps_1";
         [Header("References")]
-        public Text ValueLoading;
+        public int LevelSeed;
+        public TMP_Text ValueLoading;
         public Image ValueLoadingBar;
         public GameObject loading;
         public GameObject clock;
-        public CharacterManager _CharacterManager;
-        public ItemsManager _ItemsManager;
         public LoadManager _LoadManager;
         //PRIVATE
         private string loadscene = "Menu";
@@ -36,26 +34,45 @@ namespace naumnek.FPS
         private Animator anim;
         private Animator clockanim;
 
+        void Start() //запускаем самый первый процесс
+        {
+            instance = this;
+            clockanim = clock.GetComponent<Animator>();
+            anim = loading.GetComponent<Animator>();
+        }
+
         public static FileManager GetFileManager()
         {
             return instance.GetComponent<FileManager>();
         }
-
-        public static void SwitchScene(string scene)
+        public static int GetSeed()
         {
-            instance.anim.SetTrigger("Visibly");
-            instance.clockanim.SetTrigger("ClockWait");
-            instance.loadingSceneOperation = SceneManager.LoadSceneAsync(scene);
-            instance.loadingSceneOperation.allowSceneActivation = false;
-            instance.loadscene = scene;
+            return instance.LevelSeed;
+        }
+
+        public static void LoadScene(string scene, int seed)
+        {
+            instance.SwitchSceme(scene, seed);
+        }
+
+        void SwitchSceme(string scene, int seed)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = false;
+            loadscene = scene;
+            if (loadscene != "MainMenu" && seed == 0) LevelSeed = RandomService.Seed;
+            anim.SetTrigger("Visibly");
+            clockanim.SetTrigger("ClockWait");
+            loadingSceneOperation = SceneManager.LoadSceneAsync(scene);
+            loadingSceneOperation.allowSceneActivation = false;
         }
 
         public void EndLoadScene()
         {
-            print("Load1: " + load);
             if (loadscene == "MainMenu")
             {
-
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
             else
             {
@@ -65,11 +82,10 @@ namespace naumnek.FPS
 
         public void StartLoadScene()
         {
-            print("Load2: " + load);
             if (loadscene != "MainMenu")
             {
-                mainMenu = MenuController.GetMenuController();
-                mainMenu.gameObject.SetActive(false);
+                //mainMenu = MenuController.GetMenuController();
+                //mainMenu.gameObject.SetActive(false);
             }
             loadingSceneOperation.allowSceneActivation = true;
             anim.SetTrigger("Unvisibly");
@@ -83,21 +99,6 @@ namespace naumnek.FPS
             mainMenu.startMenu.SetActive(active);
         }
 
-        void Start() //запускаем самый первый процесс
-        {
-            instance = this;
-            clockanim = clock.GetComponent<Animator>();
-            anim = loading.GetComponent<Animator>();
-            Manager();
-        }
-
-        private void Manager()
-        {
-            Cursor.lockState = CursorLockMode.Locked; //заблокировать курсор
-            Cursor.visible = false; //скрыть курсор
-            Cursor.lockState = CursorLockMode.None; //разблокировать курсор
-            Cursor.visible = true; //показать курсор
-        }
 
 
         void Update()

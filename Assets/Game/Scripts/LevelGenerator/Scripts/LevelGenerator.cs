@@ -25,10 +25,13 @@ namespace LowLevelGenerator.Scripts
         /// </summary>
         public int MaxLevelSize;
 
+        public int MaxLevels = 1;
+
         /// <summary>
         /// Maximum allowed distance from the original section
         /// </summary>
         public int MaxAllowedOrder;
+        public bool EnableMinAllowedOrder;
 
         /// <summary>
         /// Spawnable section prefabs
@@ -41,6 +44,11 @@ namespace LowLevelGenerator.Scripts
         public DeadEnd[] DeadEnds;
 
         /// <summary>
+        /// Spawnable doors
+        /// </summary>
+        public DoorExit[] Doors;
+
+        /// <summary>
         /// Tags that will be taken into consideration when building the first section
         /// </summary>
         public string[] InitialSectionTags;
@@ -50,74 +58,103 @@ namespace LowLevelGenerator.Scripts
         /// </summary>
         public TagRule[] SpecialRules;
 
-        protected List<Section> registeredSections = new List<Section>();
-        
-        public int LevelSize { get; private set; }
-        public Transform Container => SectionContainer != null ? SectionContainer : transform;
+        public int LevelSize;
 
-        protected IEnumerable<Collider> RegisteredColliders => registeredSections.SelectMany(s => s.Bounds.Colliders).Union(DeadEndColliders);
-        protected List<Collider> DeadEndColliders = new List<Collider>();
-        protected bool HalfLevelBuilt => registeredSections.Count > LevelSize;
+        [HideInInspector]
+        protected List<Collider> RegisteredColliders = new List<Collider>();
+        [HideInInspector]
+        protected List<Collider> DoorColliders = new List<Collider>();
+
+        public List<Section> RegisteredSections = new List<Section>();
+
+        protected bool HalfLevelBuilt => RegisteredSections.Count > LevelSize;
 
         protected void Start()
         {
+            Seed = FileManager.GetFileManager().LevelSeed;
+            if (EnableMinAllowedOrder && MaxAllowedOrder > MaxLevelSize / 2) MaxAllowedOrder = MaxLevelSize / 2;
+            LevelSize = MaxLevelSize;
+            if (SectionContainer == null) SectionContainer = transform;
             if (Seed != 0)
                 RandomService.SetSeed(Seed);
             else
                 Seed = RandomService.Seed;
             
-            CheckRuleIntegrity();
-            LevelSize = MaxLevelSize;
             CreateInitialSection();
-            DeactivateBounds();
-            NavMeshGenerate.Build();
-            EnemySpawner.GetEnemySpawner().MainStart();
         }
-
-        protected void CheckRuleIntegrity()
+        public void RegisterNewSection(Section newSection)
         {
-            foreach (var ruleTag in SpecialRules.Select(r => r.Tag))
+            newSection.transform.SetParent(SectionContainer);
+            RegisteredSections.Add(newSection);
+            RegisteredColliders.AddRange(newSection.Bound.GetColliders);
+            if (LevelSize < 1 && SectionContainer.childCount == RegisteredSections.Count)
             {
-                if (SpecialRules.Count(r => r.Tag.Equals(ruleTag)) > 1)
-                    throw new InvalidRuleDeclarationException();
+                print("EndGeneration!");
+                if (GameObject.FindGameObjectWithTag("SaveObjects") != null)
+                {
+                    EndGeneration();
+                }
+
             }
         }
 
-        protected void CreateInitialSection() => Instantiate(PickSectionWithTag(InitialSectionTags), transform).Initialize(this, 0);
+        public void CheckRandomSection()
+        {
+            if (RegisteredSections.All(s => s.EndGenerateAnnexes && RegisteredSections.Count < MaxLevelSize))
+            {
+                for (int i = 0; i < RegisteredSections.Count; i++)
+                {
+                    if (RegisteredSections[i].RandomDeadEnds.Count != 0)
+                    {
+                        for (int ii = 0; ii < RegisteredSections[i].RandomDeadEnds.Count; ii++)
+                        {
+                            DeadEnd obj = RegisteredSections[i].RandomDeadEnds[ii];
+                            RegisteredSections[i].DeadEnds.Remove(obj);
+                            RegisteredSections[i].RandomDeadEnds.Remove(obj);
+                            RegisteredSections[i].GenerateSection(obj.transform);
+                            Destroy(obj.gameObject);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public void EndGeneration()
+        {
+
+            DeactivateBounds();
+            EnemySpawner.MainStart();
+        }
+
+        protected void CreateInitialSection()
+        {
+            Section sec = Instantiate(PickSectionWithTag(InitialSectionTags), transform);
+            LevelSize--;
+            sec.transform.SetParent(SectionContainer, false);
+            RegisterNewSection(sec);
+            sec.Initialize(this, 0);
+            if (sec.Structure.activeSelf)
+            {
+                foreach (DoorExit copy2 in sec.Doors) copy2.Structure.SetActive(true);
+                foreach (DeadEnd copy2 in sec.DeadEnds) copy2.Structure.SetActive(true);
+            }
+        }
 
         public void AddSectionTemplate() => Instantiate(Resources.Load("SectionTemplate"), Vector3.zero, Quaternion.identity);
         public void AddDeadEndTemplate() => Instantiate(Resources.Load("DeadEndTemplate"), Vector3.zero, Quaternion.identity);
 
-        public bool IsSectionValid(Bounds newSection, Bounds sectionToIgnore) => 
-            !RegisteredColliders.Except(sectionToIgnore.Colliders).Any(c => c.bounds.Intersects(newSection.Colliders.First().bounds));
+        public bool IsSectionValid(BoundSection newSection, BoundSection sectionToIgnore) => 
+            !RegisteredColliders.Except(sectionToIgnore.GetColliders).Any(c => c.bounds.Intersects(newSection.GetColliders.First().bounds));
 
-        public void RegisterNewSection(Section newSection)
-        {
-            registeredSections.Add(newSection);
-
-            if(SpecialRules.Any(r => newSection.Tags.Contains(r.Tag)))
-                SpecialRules.First(r => newSection.Tags.Contains(r.Tag)).PlaceRuleSection();
-
-            LevelSize--;
-        }
-
-        public void RegistrerNewDeadEnd(IEnumerable<Collider> colliders) => DeadEndColliders.AddRange(colliders);
 
         public Section PickSectionWithTag(string[] tags)
         {
-            if (RulesContainTargetTags(tags) && HalfLevelBuilt)
+            foreach (string copy in tags)
             {
-                foreach (var rule in SpecialRules.Where(r => r.NotSatisfied))
-                {
-                    if (tags.Contains(rule.Tag))
-                    {
-                        return Sections.Where(x => x.Tags.Contains(rule.Tag)).PickOne();
-                    }
-                }
+                return Sections.Where(s => s.Tags.Contains(copy)).PickOne();
             }
-
-            var pickedTag = PickFromExcludedTags(tags);
-            return Sections.Where(x => x.Tags.Contains(pickedTag)).PickOne();
+            return Sections.Where(s => s.Tags.Contains(tags.PickOne())).PickOne();
         }
 
         protected string PickFromExcludedTags(string[] tags)
@@ -130,8 +167,10 @@ namespace LowLevelGenerator.Scripts
 
         protected void DeactivateBounds()
         {
-            foreach (var c in RegisteredColliders)
-                c.enabled = false;
+            /*foreach (Collider copy in RegisteredColliders)
+            {
+                copy.enabled = false;
+            }*/
         }
     }
 }

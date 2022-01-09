@@ -136,7 +136,7 @@ namespace Unity.FPS.Gameplay
                     return;
                 }
                 // handle aiming down sights
-                IsAiming = m_InputHandler.GetAimInputHeld();
+                if(!activeWeapon.DisableAiming) IsAiming = m_InputHandler.GetAimInputHeld();
 
                 // handle shooting
                 bool hasFired = activeWeapon.HandleShootInputs(

@@ -3,6 +3,7 @@ using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using LowLevelGenerator.Scripts;
 
 namespace Unity.FPS.AI
 {
@@ -23,6 +24,7 @@ namespace Unity.FPS.AI
         }
 
         [Header("Parameters")]
+
         [Tooltip("The Y height at which the enemy will be automatically killed (if it falls off of the level)")]
         public float SelfDestructYHeight = -20f;
 
@@ -83,6 +85,9 @@ namespace Unity.FPS.AI
 
         [Tooltip("Color of the sphere gizmo representing the detection range")]
         public Color DetectionRangeColor = Color.blue;
+
+        [Header("References")]
+        public Section SpawnSection;
 
         public UnityAction onAttack;
         public UnityAction onDetectedTarget;

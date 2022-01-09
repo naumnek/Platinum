@@ -1,6 +1,7 @@
 ﻿using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.Events;
+using LowLevelGenerator.Scripts;
 
 namespace Unity.FPS.Gameplay
 {
@@ -53,7 +54,9 @@ namespace Unity.FPS.Gameplay
         [Header("Jump")] [Tooltip("Force applied upward when jumping")]
         public float JumpForce = 9f;
 
-        [Header("Stance")] [Tooltip("Ratio (0-1) of the character height where the camera will be at")]
+        [Header("Stance")]
+
+        [Tooltip("Ratio (0-1) of the character height where the camera will be at")]
         public float CameraHeightRatio = 0.9f;
 
         [Tooltip("Height of character when standing")]
@@ -103,6 +106,8 @@ namespace Unity.FPS.Gameplay
         public bool HasJumpedThisFrame { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsCrouching { get; private set; }
+        //Custom naumnek
+        public DoorExit Door;
 
         public float RotationMultiplier
         {
@@ -129,6 +134,8 @@ namespace Unity.FPS.Gameplay
         float m_CameraVerticalAngle = 0f;
         float m_FootstepDistanceCounter;
         float m_TargetCharacterHeight;
+
+        //Custom naumnek
 
         const float k_JumpGroundingPreventionTime = 0.2f;
         const float k_GroundCheckDistanceInAir = 0.07f;
@@ -172,6 +179,12 @@ namespace Unity.FPS.Gameplay
 
         void Update()
         {
+            //Custom naumnek
+            if (Door != null && Door.PlayerTrigger && !Door.LockedRoom && !Door.Locked)
+            {
+                Door.OpenDoor();
+                Door = null;
+            }
             // check for Y kill
             if (!IsDead && transform.position.y < KillHeight)
             {
@@ -465,7 +478,8 @@ namespace Unity.FPS.Gameplay
                 m_TargetCharacterHeight = CapsuleHeightStanding;
             }
 
-            if (OnStanceChanged != null)
+            if (
+                OnStanceChanged != null)
             {
                 OnStanceChanged.Invoke(crouched);
             }
