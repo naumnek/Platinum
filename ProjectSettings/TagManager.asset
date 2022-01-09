@@ -3,7 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Managers
+  - Canvas
+  - CharacterManager
+  - LoadingScreen
+  - SaveObjects
+  - Timer
+  - Spawnpoint
+  - Enemy
   layers:
   - Default
   - TransparentFX

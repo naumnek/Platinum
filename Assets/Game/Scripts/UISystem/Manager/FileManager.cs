@@ -60,9 +60,13 @@ namespace naumnek.FPS
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = false;
             loadscene = scene;
-            if (loadscene != "MainMenu" && seed == 0) LevelSeed = RandomService.Seed;
             anim.SetTrigger("Visibly");
             clockanim.SetTrigger("ClockWait");
+            if (loadscene == "MainMenu")
+            {
+                LoadManager.Unload();
+            }
+            else if (seed == 0) LevelSeed = RandomService.Seed;
             loadingSceneOperation = SceneManager.LoadSceneAsync(scene);
             loadingSceneOperation.allowSceneActivation = false;
         }
