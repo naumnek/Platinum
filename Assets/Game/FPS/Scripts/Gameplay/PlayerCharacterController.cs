@@ -106,8 +106,6 @@ namespace Unity.FPS.Gameplay
         public bool HasJumpedThisFrame { get; private set; }
         public bool IsDead { get; private set; }
         public bool IsCrouching { get; private set; }
-        //Custom naumnek
-        public DoorExit Door;
 
         public float RotationMultiplier
         {
@@ -179,12 +177,6 @@ namespace Unity.FPS.Gameplay
 
         void Update()
         {
-            //Custom naumnek
-            if (Door != null && Door.PlayerTrigger && !Door.LockedRoom && !Door.Locked)
-            {
-                Door.OpenDoor();
-                Door = null;
-            }
             // check for Y kill
             if (!IsDead && transform.position.y < KillHeight)
             {

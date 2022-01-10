@@ -9,12 +9,11 @@ namespace LowLevelGenerator.Scripts
         [HideInInspector]
         public DoorExit doorExit;
 
-        private void OnTriggerEnter(Collider trigger)
+        private void OnTriggerStay(Collider trigger)
         {
             if (trigger.name == "Player") 
             {
-                doorExit.PlayerTrigger = true;
-                doorExit.TriggerPlayer(trigger.transform); 
+                doorExit.OpenDoor(); 
             }
         }
 
@@ -22,7 +21,6 @@ namespace LowLevelGenerator.Scripts
         {
             if (trigger.name == "Player")
             {
-                doorExit.PlayerTrigger = false; 
                 doorExit.ClosedDoor(); 
             }
         }

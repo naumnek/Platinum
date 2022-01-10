@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.FPS.Gameplay;
+using System.Linq;
 
 namespace LowLevelGenerator.Scripts
 {
@@ -9,14 +10,13 @@ namespace LowLevelGenerator.Scripts
     {
         public GameObject Structure;
         public DoorTrigger doorTrigger;
-        public bool PlayerTrigger = false;
         public bool LockedRoom = false;
-        public bool Locked = false;
         public bool isClosed = false;
         public AnimationClip ClosedDoorAnimation;
         public Animator anim;
         DoorExit door;
         public List<Section> Sections = new List<Section>();
+        public Section PlayerSection => Sections.Where(s => s.Bound.player).First();
 
         private void Start()
         {
@@ -25,24 +25,18 @@ namespace LowLevelGenerator.Scripts
             doorTrigger.doorExit = this;
         }
 
-        public void TriggerPlayer(Transform target)
+        public void OpenDoor()
         {
-            if (!anim.GetBool("Open"))
+            if (!isClosed && PlayerSection.Matched)
             {
-                target.GetComponent<PlayerCharacterController>().Door = door;
+                isClosed = true;
+                Sections[0].SetActiveSection(this, true);
+                anim.SetBool("Open", true);
             }
         }
-
         public void ClosedDoor()
         {
             anim.SetBool("Open", false);
-        }
-        public void OpenDoor()
-        {
-            Sections[0].SetActiveSection(this, true);
-            isClosed = true;
-            Locked = true;
-            anim.SetBool("Open", true);
         }
 
         public void EndClosedDoor()

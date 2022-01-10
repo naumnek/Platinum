@@ -12,9 +12,9 @@ namespace LowLevelGenerator.Scripts
         public bool player = false;
         public Section section;
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerStay(Collider other)
         {
-            if (other.tag == "Player")
+            if (!player && other.tag == "Player")
             {
                 player = true;
             }
@@ -22,7 +22,7 @@ namespace LowLevelGenerator.Scripts
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.tag == "Player") player = false;           
+            if (player && other.tag == "Player") player = false;           
         }
     }
 }

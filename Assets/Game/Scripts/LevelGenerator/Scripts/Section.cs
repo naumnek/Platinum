@@ -45,11 +45,11 @@ namespace LowLevelGenerator.Scripts
         [HideInInspector]
         public List<DoorExit> Doors = new List<DoorExit>();
         [HideInInspector]
+        public List<DoorExit> FlankDoors = new List<DoorExit>();
+        [HideInInspector]
         public List<DeadEnd> DeadEnds = new List<DeadEnd>();
         [HideInInspector]
         public List<Section> FlankSections = new List<Section>();
-        [HideInInspector]
-        public List<DoorExit> FlankDoors = new List<DoorExit>();
         [HideInInspector]
         public List<DeadEnd> RandomDeadEnds = new List<DeadEnd>();
         [HideInInspector]
@@ -160,74 +160,30 @@ namespace LowLevelGenerator.Scripts
             {
                 EventManager.Broadcast(Events.RoomMatchedEvent);
                 Matched = true;
-                LockedAllDoors(false);
-            }
-        }
-        private void LockedIsOpenDoors(DoorExit openDoor, bool action)
-        {
-            for (int ii = 0; ii < FlankDoors.Count(); ii++)
-            {
-                if(FlankDoors[ii] != openDoor) FlankDoors[ii].LockedRoom = action;
-            }
-            for (int ii = 0; ii < Doors.Count(); ii++)
-            {
-                if(Doors[ii] != openDoor) Doors[ii].LockedRoom = action;
-            }
-        }
-
-        private void LockedAllDoors(bool action)
-        {
-            for (int ii = 0; ii < FlankDoors.Count(); ii++)
-            {
-                FlankDoors[ii].LockedRoom = action;
-            }
-            for (int ii = 0; ii < Doors.Count(); ii++)
-            {
-                Doors[ii].LockedRoom = action;
             }
         }
 
         public void SetActiveSection(DoorExit door, bool action)
         {
-            List<Section> playerSection = new List<Section>();
-            playerSection.AddRange(m_LevelGenerator.RegisteredSections.Where(s => s.Bound.player || s.FlankDoors.Any(d => d.isClosed) || s.Doors.Any(d => d.isClosed)));
+            List<Section> EmptySections = new List<Section>();
+            EmptySections.AddRange(door.Sections.Where(s => !s.Bound.player)); 
 
-            List<Section> section = new List<Section>();
-            section.AddRange(door.Sections.Where(s => !playerSection.Any(ss => ss == s)));
-            for (int i = 0; i < section.Count(); i++)
+            for (int i = 0; i < EmptySections.Count; i++)
             {
-                section[i].Structure.SetActive(action);
-                //
-                for (int ii = 0; ii < section[i].DeadEnds.Count(); ii++)
+                if(action || EmptySections[i].FlankDoors.All(d => !d.isClosed)) EmptySections[i].Structure.SetActive(action);
+                
+                for (int ii = 0; ii < EmptySections[i].DeadEnds.Count; ii++)
                 {
-                    section[i].DeadEnds[ii].Structure.SetActive(action);
+                    EmptySections[i].DeadEnds[ii].Structure.SetActive(action);
                 }
-                //
-                for (int ii = 0; ii < section[i].FlankDoors.Count(); ii++)
-                {
-                    if (action || !playerSection.Any(s => s.FlankDoors.Any(d => d == section[i].FlankDoors[ii])))
+                
+                for (int ii = 0; ii < EmptySections[i].FlankDoors.Count; ii++)
+                {                  
+                    if (action || EmptySections[i].FlankDoors[ii].Sections.All(s => !s.Bound.player && s.FlankDoors.All(d => !d.isClosed)))
                     {
-                        section[i].FlankDoors[ii].Structure.SetActive(action);
-                        section[i].FlankDoors[ii].enabled = action;
+                        EmptySections[i].FlankDoors[ii].Structure.SetActive(action);
                     }
                 }
-            }
-            Section triggerPlayerSection = m_LevelGenerator.RegisteredSections.Where(s => s.Bound.player).First();
-            if (action)
-            {
-                Section notTriggerPlayerSection = section.Where(s => s != triggerPlayerSection).First();
-                if (!notTriggerPlayerSection.Matched)
-                {
-                    notTriggerPlayerSection.LockedIsOpenDoors(door, true);
-                }
-            }
-            else
-            {
-                if (!triggerPlayerSection.Matched)
-                {
-                    triggerPlayerSection.LockedAllDoors(true);
-                }
-                door.Locked = false;
             }
         }
     }
