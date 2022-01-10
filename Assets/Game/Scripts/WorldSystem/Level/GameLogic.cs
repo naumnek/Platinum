@@ -20,6 +20,8 @@ namespace naumnek.FPS
         EnemySpawner m_EnemySpawner;
         bool load = true;
         private static GameLogic instance;
+        int EnemyKilled = 0;
+        int EnemySpawned = 0;
 
         public static GameLogic GetGameLogic()
         {
@@ -29,15 +31,31 @@ namespace naumnek.FPS
         void Start()
         {
             instance = this;
-            EventManager.AddListener<RoomMatchedEvent>(OnRoomMatched);
+            EventManager.AddListener<EnemyKillEvent>(OnEnemyKill);
         }
 
-        public void OnRoomMatched(RoomMatchedEvent evt)
+        void OnEnemyKill(EnemyKillEvent evt)
         {
-            DisplayMessageEvent displayMessage = Events.DisplayMessageEvent;
-            displayMessage.Message = Title;
-            displayMessage.DelayBeforeDisplay = DelayBeforeDisplay;
-            EventManager.Broadcast(displayMessage);
+            Statistics("Enemy", "Killed");
+        }
+
+        void Statistics(string Tag, string Name)
+        {
+            if (Tag == "Enemy" && Name == "Spawned") EnemySpawned++;
+            if (Tag == "Enemy" && Name == "Killed") EnemyKilled++;
+            CustomObjectives();
+        }
+
+        void CustomObjectives()
+        {
+            if(EnemySpawned == EnemyKilled)
+            {
+                DisplayMessageEvent displayMessage = Events.DisplayMessageEvent;
+                displayMessage.Message = Title;
+                displayMessage.DelayBeforeDisplay = DelayBeforeDisplay;
+                EventManager.Broadcast(displayMessage);
+                EventManager.Broadcast(Events.AllObjectivesCompletedEvent);
+            }
         }
 
         public static Transform SpawnObject(GameObject prefab, float x, float y)
@@ -55,6 +73,7 @@ namespace naumnek.FPS
             GameObject obj = Instantiate(prefab, parent);
             obj.transform.position = new Vector3(x, y, z);
             obj.transform.SetParent(parent);
+            instance.Statistics(obj.tag,"Spawned");
             return obj.transform;
         }
 
@@ -72,6 +91,10 @@ namespace naumnek.FPS
         {
             list.Remove(target);
             Destroy(target.gameObject);
+        }
+        private void OnDestroy()
+        {
+            EventManager.RemoveListener<EnemyKillEvent>(OnEnemyKill);
         }
     }
 }

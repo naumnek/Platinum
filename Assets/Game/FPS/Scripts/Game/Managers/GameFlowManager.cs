@@ -68,8 +68,7 @@ namespace Unity.FPS.Game
 
         void OnAllObjectivesCompleted(AllObjectivesCompletedEvent evt)
         {
-            print("все задания выполнены");
-            //EndGame(true); 
+            EndGame(true); 
         }
 
         void OnPlayerDeath(PlayerDeathEvent evt) => EndGame(false);
@@ -103,10 +102,10 @@ namespace Unity.FPS.Game
                 //    message.GetComponent<Transform>().SetAsLastSibling();
                 //}
 
-                DisplayMessageEvent displayMessage = Events.DisplayMessageEvent;
-                displayMessage.Message = WinGameMessage;
-                displayMessage.DelayBeforeDisplay = DelayBeforeWinMessage;
-                EventManager.Broadcast(displayMessage);
+                //DisplayMessageEvent displayMessage = Events.DisplayMessageEvent;
+                //displayMessage.Message = WinGameMessage;
+                //displayMessage.DelayBeforeDisplay = DelayBeforeWinMessage;
+                //EventManager.Broadcast(displayMessage);
             }
             else
             {

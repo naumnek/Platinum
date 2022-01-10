@@ -557,6 +557,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 763b9f5929d25c846b11001206733472, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Title: All enemies destroyed
+  DelayBeforeDisplay: 0.5
   timer: {fileID: 1784942497}
 --- !u!1 &1119109762
 GameObject:
