@@ -158,7 +158,7 @@ namespace LowLevelGenerator.Scripts
             Enemys.Remove(enemy);
             if(Enemys.Count == 0 && !Matched)
             {
-                EventManager.Broadcast(Events.RoomMatchedEvent);
+                //EventManager.Broadcast(Events.RoomMatchedEvent);
                 Matched = true;
             }
         }
@@ -170,7 +170,7 @@ namespace LowLevelGenerator.Scripts
 
             for (int i = 0; i < EmptySections.Count; i++)
             {
-                if(EmptySections[i].FlankDoors.All(d => !d.isClosed)) EmptySections[i].Structure.SetActive(action);
+                if(action || EmptySections[i].FlankDoors.All(d => !d.isClosing)) EmptySections[i].Structure.SetActive(action);
                 
                 for (int ii = 0; ii < EmptySections[i].DeadEnds.Count; ii++)
                 {
@@ -179,7 +179,7 @@ namespace LowLevelGenerator.Scripts
                 
                 for (int ii = 0; ii < EmptySections[i].FlankDoors.Count; ii++)
                 {                  
-                    if (EmptySections[i].FlankDoors[ii].Sections.All(s => !s.Bound.player && s.FlankDoors.All(d => !d.isClosed)))
+                    if (action || EmptySections[i].FlankDoors[ii].Sections.All(s => !s.Bound.player && s.FlankDoors.All(d => !d.isClosing)))
                     {
                         EmptySections[i].FlankDoors[ii].Structure.SetActive(action);
                     }

@@ -11,7 +11,7 @@ namespace LowLevelGenerator.Scripts
 
         private void OnTriggerStay(Collider trigger)
         {
-            if (trigger.name == "Player") 
+            if (trigger.tag == "Player") 
             {
                 doorExit.OpenDoor(); 
             }
@@ -19,7 +19,7 @@ namespace LowLevelGenerator.Scripts
 
         private void OnTriggerExit(Collider trigger)
         {
-            if (trigger.name == "Player")
+            if (trigger.tag == "Player")
             {
                 doorExit.ClosedDoor(); 
             }

@@ -11,7 +11,7 @@ namespace LowLevelGenerator.Scripts
         public GameObject Structure;
         public DoorTrigger doorTrigger;
         public bool LockedRoom = false;
-        public bool isClosed = false;
+        public bool isClosing = false;
         public AnimationClip ClosedDoorAnimation;
         public Animator anim;
         DoorExit door;
@@ -27,21 +27,21 @@ namespace LowLevelGenerator.Scripts
 
         public void OpenDoor()
         {
-            if (!isClosed && PlayerSection.Matched)
+            if (PlayerSection.Matched)
             {
-                Sections[0].SetActiveSection(this, true);
-                isClosed = true;
+                if(!isClosing) Sections[0].SetActiveSection(this, true);
+                isClosing = true;
                 anim.SetBool("Open", true);
             }
         }
         public void ClosedDoor()
         {
-            anim.SetBool("Open", false);
+            if (isClosing) anim.SetBool("Open", false);
         }
 
         public void EndClosedDoor()
         {
-            isClosed = false;
+            isClosing = false;
             Sections[0].SetActiveSection(this, false);
         }
     }
