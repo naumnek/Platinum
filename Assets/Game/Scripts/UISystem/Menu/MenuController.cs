@@ -84,7 +84,7 @@ namespace naumnek.FPS
         }
         public void SetQualitySettings(TMP_Dropdown dropdown)
         {
-            QualitySettings.SetQualityLevel(dropdown.value, true);
+            QualitySettings.SetQualityLevel(dropdown.value, Screen.fullScreen);
         }
 
         public void SetScreenResolution(TMP_Dropdown ResolutionDropdown) // вкл/выкл полноэкранный режим

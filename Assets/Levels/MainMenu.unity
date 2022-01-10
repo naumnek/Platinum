@@ -1679,7 +1679,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1580365097}
         m_TargetAssemblyTypeName: naumnek.FPS.MenuController, Assembly-CSharp
-        m_MethodName: DropdownSetQualityLevel
+        m_MethodName: SetQualitySettings
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 255184954}
@@ -2995,7 +2995,7 @@ AudioSource:
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 003153c6188672a4780c9f01be9898cb, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -3546,13 +3546,13 @@ MonoBehaviour:
       m_Calls: []
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
-  m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
+  m_SelectionColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 0.5019608}
   m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_GlobalFontAsset: {fileID: 11400000, guid: 1e60ad9808a8eb042b9d0167d78aee14, type: 2}
   m_OnFocusSelectAll: 1
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
@@ -3876,7 +3876,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1580365097}
         m_TargetAssemblyTypeName: naumnek.FPS.MenuController, Assembly-CSharp
-        m_MethodName: DropdownSetResolution
+        m_MethodName: SetScreenResolution
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 619434696}
@@ -6395,7 +6395,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4282046705
-  m_fontColor: {r: 0.94509804, g: 0.84705883, b: 0.22745098, a: 1}
+  m_fontColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6412,8 +6412,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
-  m_fontSizeBase: 42
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7216,7 +7216,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3370312933
+    rgba: 14869733
   m_fontColor: {r: 0.8980392, g: 0.89411765, b: 0.8862745, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -8060,7 +8060,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3355508732
+    rgba: 65532
   m_fontColor: {r: 0.9882353, g: 1, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -8264,11 +8264,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
-    m_HighlightedColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
-    m_PressedColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
-    m_SelectedColor: {r: 0.42352942, g: 0.42352942, b: 0.42352942, a: 1}
-    m_DisabledColor: {r: 0.34117648, g: 0.34117648, b: 0.34117648, a: 1}
+    m_NormalColor: {r: 0.94509804, g: 0.84705883, b: 0.22745098, a: 1}
+    m_HighlightedColor: {r: 0.7264151, g: 0.6518937, b: 0.18091846, a: 1}
+    m_PressedColor: {r: 0.8773585, g: 0.78848284, b: 0.22678883, a: 1}
+    m_SelectedColor: {r: 0.7254902, g: 0.6509804, b: 0.18039216, a: 1}
+    m_DisabledColor: {r: 0.8784314, g: 0.7882353, b: 0.22745098, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -8290,13 +8290,13 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 25
   m_WholeNumbers: 1
-  m_Value: 18
+  m_Value: 25
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1580365097}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: MusicVolume
+        m_TargetAssemblyTypeName: naumnek.FPS.MenuController, Assembly-CSharp
+        m_MethodName: SetMusicVolume
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1471527984}
@@ -9486,8 +9486,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1580365097}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: FullScreenToggle
+        m_TargetAssemblyTypeName: naumnek.FPS.MenuController, Assembly-CSharp
+        m_MethodName: SetFullScreen
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1861841324}
