@@ -170,7 +170,7 @@ namespace LowLevelGenerator.Scripts
 
             for (int i = 0; i < EmptySections.Count; i++)
             {
-                if(action || EmptySections[i].FlankDoors.All(d => !d.isClosed)) EmptySections[i].Structure.SetActive(action);
+                if(EmptySections[i].FlankDoors.All(d => !d.isClosed)) EmptySections[i].Structure.SetActive(action);
                 
                 for (int ii = 0; ii < EmptySections[i].DeadEnds.Count; ii++)
                 {
@@ -179,7 +179,7 @@ namespace LowLevelGenerator.Scripts
                 
                 for (int ii = 0; ii < EmptySections[i].FlankDoors.Count; ii++)
                 {                  
-                    if (action || EmptySections[i].FlankDoors[ii].Sections.All(s => !s.Bound.player && s.FlankDoors.All(d => !d.isClosed)))
+                    if (EmptySections[i].FlankDoors[ii].Sections.All(s => !s.Bound.player && s.FlankDoors.All(d => !d.isClosed)))
                     {
                         EmptySections[i].FlankDoors[ii].Structure.SetActive(action);
                     }

@@ -29,8 +29,8 @@ namespace LowLevelGenerator.Scripts
         {
             if (!isClosed && PlayerSection.Matched)
             {
-                isClosed = true;
                 Sections[0].SetActiveSection(this, true);
+                isClosed = true;
                 anim.SetBool("Open", true);
             }
         }
