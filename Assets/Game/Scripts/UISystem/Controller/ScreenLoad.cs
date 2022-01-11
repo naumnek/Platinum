@@ -11,7 +11,7 @@ namespace naumnek.FPS
 
         public void OnAnimationOver(string v)
         {
-            if(fileManager == null) fileManager = FileManager.GetFileManager();
+            if (fileManager == null) fileManager = FileManager.GetFileManager();
             switch (v)
             {
                 case ("Unvisibily"):

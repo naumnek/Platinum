@@ -195,7 +195,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1132614422}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &308691053
 GameObject:
@@ -341,7 +341,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1132614422}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &946913315
 GameObject:
@@ -493,10 +493,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 308691054}
-  - {fileID: 563828095}
   - {fileID: 735056036}
-  - {fileID: 1630018392}
+  - {fileID: 563828095}
   - {fileID: 155112429}
+  - {fileID: 1630018392}
   - {fileID: 1680716344}
   - {fileID: 1784942496}
   m_Father: {fileID: 0}
@@ -744,6 +744,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
+      propertyPath: MusicSource
+      value: 
+      objectReference: {fileID: 1680716343}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
       propertyPath: WinSceneName
       value: MainMenu
       objectReference: {fileID: 0}
@@ -762,6 +767,26 @@ PrefabInstance:
       propertyPath: EndSceneLoadDelay
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      propertyPath: AllMusics.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      propertyPath: AllMusics.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: cb3bf889833e1784f865059ddae4e793, type: 3}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      propertyPath: AllMusics.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 003153c6188672a4780c9f01be9898cb, type: 3}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      propertyPath: AllMusics.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 0aa2bfc8e1fa0a749aa1314bba42ce4a, type: 3}
     - target: {fileID: 1315839542190839937, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: m_RootOrder
@@ -1694,7 +1719,7 @@ GameObject:
   - component: {fileID: 1680716344}
   - component: {fileID: 1680716343}
   m_Layer: 5
-  m_Name: Audio Source
+  m_Name: Music Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1712,8 +1737,8 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 3f6bbd8a7f0ba6b459475d4fe6c4b29f,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: cb3bf889833e1784f865059ddae4e793, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_PlayOnAwake: 0
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0

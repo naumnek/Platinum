@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using naumnek.FPS;
+using System.Collections.Generic;
 
 namespace Unity.FPS.Game
 {
     public class GameFlowManager : MonoBehaviour
     {
-        [Header("Parameters")] [Tooltip("Duration of the fade-to-black at the end of the game")]
+        [Header("Parameters")]
+        public AudioSource MusicSource;
+        public List<AudioClip> AllMusics = new List<AudioClip>();
+        System.Random ran = new System.Random();
+
+        [Tooltip("Duration of the fade-to-black at the end of the game")]
         public float EndSceneLoadDelay = 3f;
+
 
         [Tooltip("The canvas group of the fade-to-black screen")]
         public CanvasGroup EndGameFadeCanvasGroup;
@@ -44,6 +51,8 @@ namespace Unity.FPS.Game
         void Start()
         {
             AudioUtility.SetMasterVolume(1);
+            MusicSource.clip = AllMusics[ran.Next(0, AllMusics.Count)];
+            MusicSource.Play();
         }
 
         void Update()
@@ -86,6 +95,8 @@ namespace Unity.FPS.Game
             {
                 m_SceneToLoad = WinSceneName;
                 m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay + DelayBeforeFadeToBlack;
+
+                MusicSource.Pause();
 
                 // play a sound on win
                 var audioSource = gameObject.AddComponent<AudioSource>();

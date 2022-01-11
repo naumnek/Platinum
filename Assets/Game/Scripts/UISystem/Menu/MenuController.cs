@@ -8,6 +8,8 @@ using TMPro;
 using System.IO;
 using System;
 using System.Linq;
+using Unity.FPS.Game;
+using Unity.FPS.Gameplay;
 
 
 namespace naumnek.FPS
@@ -17,16 +19,23 @@ namespace naumnek.FPS
         public GameObject startMenu;
         public GameObject[] allMenu;
         public Slider MusicVolume;
+        public Slider LookSensitivity;
         public TMP_Dropdown GraphicsQuality;
         public TMP_Dropdown ScreenResolution;
         public Toggle FullScreen;
         public TMP_InputField Seed;
-        public AudioMixer Music;
+        public AudioMixer MusicMixer;
+        public AudioSource MusicSource;
+        public List<AudioClip> AllMusics = new List<AudioClip>();
+        public Image Background;
+        public List<Sprite> BackgroundSprites = new List<Sprite>();
         public bool load = true;
         //PRIVATE
-        private List<Resolution> ScreenResolutions = new List<Resolution>();
+        PlayerInputHandler m_PlayerInputsHandler;
         private static MenuController instance;
-        private FileManager _fileManager;
+        FileManager _fileManager;
+        System.Random ran = new System.Random();
+        List<Resolution> ScreenResolutions = new List<Resolution>();
 
         public static MenuController GetMenuController()
         {
@@ -36,6 +45,13 @@ namespace naumnek.FPS
         void Start() //запускаем самый первый процесс
         {
             instance = this;
+
+            MusicSource.clip = AllMusics[ran.Next(0, AllMusics.Count)];
+            if (MusicSource.clip.name == "Cafofo - AMB - Muffled Pop Music") MusicSource.volume = 1;
+            MusicSource.Play();
+
+            m_PlayerInputsHandler = FindObjectOfType<PlayerInputHandler>();
+
             LoadUI();
         }
 
@@ -50,6 +66,8 @@ namespace naumnek.FPS
 
         private void LoadUI()
         {
+            Background.sprite = BackgroundSprites[ran.Next(0, BackgroundSprites.Count)];
+
             ScreenResolutions.AddRange(Screen.resolutions);
             foreach (Resolution resolution in ScreenResolutions)
             {
@@ -61,6 +79,7 @@ namespace naumnek.FPS
         private void LoadSettings() //загружаем информацию из файлов
         {
             MusicVolume.value = PlayerPrefs.GetFloat("MusicVolume");
+            LookSensitivity.value = PlayerPrefs.GetFloat("LookSensitivity");
             GraphicsQuality.value = PlayerPrefs.GetInt("GraphicsQuality");
             ScreenResolution.value = PlayerPrefs.GetInt("ScreenResolution");
             FullScreen.isOn = PlayerPrefs.GetString("FullScreen") == "True";
@@ -70,6 +89,7 @@ namespace naumnek.FPS
         private void SaveSettings() //сохраняем значения объектов в файл
         {
             PlayerPrefs.SetFloat("MusicVolume", MusicVolume.value);
+            PlayerPrefs.SetFloat("LookSensitivity", LookSensitivity.value);
             PlayerPrefs.SetInt("GraphicsQuality", GraphicsQuality.value);
             PlayerPrefs.SetInt("ScreenResolution", ScreenResolution.value);
             PlayerPrefs.SetString("FullScreen", FullScreen.isOn.ToString());
@@ -80,8 +100,14 @@ namespace naumnek.FPS
         public void SetMusicVolume(Slider slider) //установка громкости звука
         {
             slider.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (slider.value * 4).ToString();
-            Music.SetFloat("musicVolume", -(25 - slider.value));
+            MusicMixer.SetFloat("musicVolume", -(25 - slider.value));
         }
+
+        public void SetLookSensitivity(Slider slider)
+        {
+            slider.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = slider.value.ToString();
+        }
+
         public void SetQualitySettings(TMP_Dropdown dropdown)
         {
             QualitySettings.SetQualityLevel(dropdown.value, Screen.fullScreen);

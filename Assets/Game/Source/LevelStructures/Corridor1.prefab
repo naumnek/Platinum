@@ -80,6 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ed874b023a43dbaf8a4a73ced13dc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Matched: 1
   Tags:
   - corridor
   CreatesTags:
@@ -95,10 +96,11 @@ MonoBehaviour:
   Spawner: {fileID: 8074582472908245573}
   DeadEndChance: 0
   Doors: []
+  FlankDoors: []
   DeadEnds: []
   FlankSections: []
-  FlankDoors: []
   RandomDeadEnds: []
+  Enemys: []
 --- !u!1 &2008371194923141552
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +248,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1.8
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -427,7 +429,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1.8
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -520,7 +522,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1.8
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -5134,6 +5136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: 0
+  section: {fileID: 0}
 --- !u!1 &8817708446040160341
 GameObject:
   m_ObjectHideFlags: 0
@@ -5177,7 +5180,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1.8
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

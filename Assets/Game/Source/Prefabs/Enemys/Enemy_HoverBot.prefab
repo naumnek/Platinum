@@ -135,6 +135,7 @@ MonoBehaviour:
   PathReachingRangeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   AttackRangeColor: {r: 1, g: 0, b: 0, a: 1}
   DetectionRangeColor: {r: 0, g: 0, b: 1, a: 1}
+  SpawnSection: {fileID: 0}
 --- !u!114 &6804356933710695090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -745,7 +746,7 @@ MonoBehaviour:
   WeaponAnimator: {fileID: 0}
   MuzzleFlashPrefab: {fileID: 2959994400439572986}
   UnparentMuzzleFlash: 0
-  ShootSfx: {fileID: 8300000, guid: a56e3c9f90e17894eb1625f603eceb54, type: 3}
+  ShootSfx: {fileID: 8300000, guid: 4139162f635014b5db7fdb69147ad0f8, type: 3}
   ChangeWeaponSfx: {fileID: 0}
   UseContinuousShootSound: 0
   ContinuousShootStartSfx: {fileID: 0}
