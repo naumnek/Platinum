@@ -18,6 +18,8 @@ namespace LowLevelGenerator.Scripts
         public List<Section> Sections = new List<Section>();
         public Section PlayerSection => Sections.Where(s => s.Bound.player).First();
 
+        bool EndOpened = true;
+
         private void Start()
         {
             anim = GetComponent<Animator>();
@@ -29,14 +31,25 @@ namespace LowLevelGenerator.Scripts
         {
             if (PlayerSection.Matched)
             {
-                if(!isClosing) Sections[0].SetActiveSection(this, true);
-                isClosing = true;
-                anim.SetBool("Open", true);
+                if(!isClosing && EndOpened)
+                {
+                    Sections[0].SetActiveSection(this, true);
+                    isClosing = true;
+                    EndOpened = false;
+                    anim.SetBool("Open", true);
+                }
             }
         }
         public void ClosedDoor()
         {
-            if (isClosing) anim.SetBool("Open", false);
+            if(EndOpened) anim.SetBool("Open", false);
+        }
+
+        public void EndOpenedDoor()
+        {
+            print("EndOpened");
+            EndOpened = true;
+            if (!doorTrigger.player) ClosedDoor();
         }
 
         public void EndClosedDoor()

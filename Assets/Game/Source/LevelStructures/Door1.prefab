@@ -29,8 +29,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1857639858879528001}
   - {fileID: 8724209021758425131}
+  - {fileID: 1857639858879528001}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -48,7 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Structure: {fileID: 3078825090183844308}
   doorTrigger: {fileID: 9029076422729056984}
-  Locked: 0
+  LockedRoom: 0
+  isClosing: 0
   ClosedDoorAnimation: {fileID: 7400000, guid: 833886dcb6d57274cb89a6d992e0bf29, type: 2}
   anim: {fileID: 0}
   Sections: []
@@ -152,13 +153,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016489326934679422}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -4.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4038002191160729795}
   m_Father: {fileID: 6656673847153505443}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2480624132693299159
 GameObject:
@@ -235,7 +236,7 @@ Transform:
   - {fileID: 8572372858470403599}
   - {fileID: 2855241256743869169}
   m_Father: {fileID: 6656673847153505443}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3593585852156209908
 PrefabInstance:
