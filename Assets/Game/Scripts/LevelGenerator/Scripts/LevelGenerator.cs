@@ -41,7 +41,7 @@ namespace LowLevelGenerator.Scripts
         /// <summary>
         /// Spawnable dead ends
         /// </summary>
-        public DeadEnd[] DeadEnds;
+        public GameObject[] DeadEnds;
 
         /// <summary>
         /// Spawnable doors
@@ -108,7 +108,7 @@ namespace LowLevelGenerator.Scripts
                     {
                         for (int ii = 0; ii < RegisteredSections[i].RandomDeadEnds.Count; ii++)
                         {
-                            DeadEnd obj = RegisteredSections[i].RandomDeadEnds[ii];
+                            GameObject obj = RegisteredSections[i].RandomDeadEnds[ii];
                             RegisteredSections[i].DeadEnds.Remove(obj);
                             RegisteredSections[i].RandomDeadEnds.Remove(obj);
                             RegisteredSections[i].GenerateSection(obj.transform);
@@ -137,7 +137,7 @@ namespace LowLevelGenerator.Scripts
             if (sec.Structure.activeSelf)
             {
                 foreach (DoorExit copy2 in sec.Doors) copy2.Structure.SetActive(true);
-                foreach (DeadEnd copy2 in sec.DeadEnds) copy2.Structure.SetActive(true);
+                foreach (GameObject copy2 in sec.DeadEnds) copy2.SetActive(true);
             }
         }
 

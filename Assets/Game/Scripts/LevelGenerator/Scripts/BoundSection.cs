@@ -9,17 +9,25 @@ namespace LowLevelGenerator.Scripts
     {
         public IEnumerable<Collider> GetColliders => GetComponentsInChildren<Collider>();
 
-        public bool player = false;
-        public Section section;
+        public Section ParentSection;
+        bool player = false;
 
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
-            if (!player && other.tag == "Player") player = true;           
+            if (!player && other.tag == "Player")
+            {
+                player = true;
+                ParentSection.OnTriggerPlayer(true);
+            }        
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (player && other.tag == "Player") player = false;           
+            if (player && other.tag == "Player")
+            {
+                player = false;
+                ParentSection.OnTriggerPlayer(false);
+            }           
         }
     }
 }

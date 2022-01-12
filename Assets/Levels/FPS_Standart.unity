@@ -574,7 +574,7 @@ MonoBehaviour:
   - {fileID: 6245267819139266099, guid: cc4552fae662a5541b29441aba7c3e36, type: 3}
   - {fileID: 239824424659530175, guid: ab459cef57497224cb807b2bf86d893b, type: 3}
   DeadEnds:
-  - {fileID: 2597937124416505202, guid: a4837564a9f1ad349976a8d9a9f7800b, type: 3}
+  - {fileID: 4789003448629888787, guid: a4837564a9f1ad349976a8d9a9f7800b, type: 3}
   Doors:
   - {fileID: 4551712439126598518, guid: cd9551d7b7a33be4cb70ab582ab90e87, type: 3}
   InitialSectionTags:

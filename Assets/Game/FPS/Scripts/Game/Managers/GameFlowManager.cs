@@ -54,7 +54,8 @@ namespace Unity.FPS.Game
         void Start()
         {
             AudioUtility.SetMasterVolume(1);
-            SetMusic(ran.Next(0, AllMusics.Count));
+            NumberMusic = ran.Next(0, AllMusics.Count - 1);
+            SetMusic();
             MusicSource.Play();
         }
 
@@ -69,25 +70,24 @@ namespace Unity.FPS.Game
             switch (evt.SwitchMusic)
             {
                 case ("left"):
-                    SetMusic(0);
+                    NumberMusic--;
+                    SetMusic();
                     break;
                 case ("right"):
-                    SetMusic(1);
-                    break;
-                default:
+                    NumberMusic++;
+                    SetMusic();
                     break;
             }
         }
 
-        void SetMusic(int Switch)
+        void SetMusic()
         {
-            if(NumberMusic == AllMusics.Count && Switch == 1) NumberMusic = 0;
-            if (NumberMusic == 0 && Switch == -1) NumberMusic = AllMusics.Count;
-            else NumberMusic += Switch;
-            print("NumberMusic: " + NumberMusic);
-            MusicSource.clip = AllMusics[NumberMusic - 1];
+            if (NumberMusic < 0) NumberMusic = AllMusics.Count - 1;
+            if (NumberMusic > AllMusics.Count - 1) NumberMusic = 0;
+            print("NumberMusic: " + NumberMusic + "/" + AllMusics.Count);
+            MusicSource.clip = AllMusics[NumberMusic];
             SwitchMusicEvent evt = Events.SwitchMusicEvent;
-            evt.Music = AllMusics[NumberMusic - 1];
+            evt.Music = AllMusics[NumberMusic];
             evt.SwitchMusic = "none";
             EventManager.Broadcast(evt);
         }

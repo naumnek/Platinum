@@ -7,12 +7,12 @@ namespace LowLevelGenerator.Scripts
     public class DoorTrigger : MonoBehaviour
     {
         [HideInInspector]
-        public bool player;
         public DoorExit doorExit;
+        public bool player;
 
         private void OnTriggerStay(Collider trigger)
         {
-            if (!player && trigger.tag == "Player") 
+            if (trigger.tag == "Player") 
             {
                 player = true;
                 doorExit.OpenDoor(); 
@@ -21,7 +21,7 @@ namespace LowLevelGenerator.Scripts
 
         private void OnTriggerExit(Collider trigger)
         {
-            if (player && trigger.tag == "Player")
+            if (trigger.tag == "Player")
             {
                 player = false;
                 doorExit.ClosedDoor(); 
