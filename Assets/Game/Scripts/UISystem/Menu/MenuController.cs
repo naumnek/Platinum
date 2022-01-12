@@ -26,7 +26,8 @@ namespace naumnek.FPS
         public TMP_InputField Seed;
         public AudioMixer MusicMixer;
         public AudioSource MusicSource;
-        public List<AudioClip> AllMusics = new List<AudioClip>();
+        public List<AudioClip> WinMusics = new List<AudioClip>();
+        public List<AudioClip> LoseMusics = new List<AudioClip>();
         public Image Background;
         public List<Sprite> BackgroundSprites = new List<Sprite>();
         public bool load = true;
@@ -45,14 +46,34 @@ namespace naumnek.FPS
         void Start() //запускаем самый первый процесс
         {
             instance = this;
-
-            MusicSource.clip = AllMusics[ran.Next(0, AllMusics.Count)];
-            if (MusicSource.clip.name == "Cafofo - AMB - Muffled Pop Music") MusicSource.volume = 1;
-            MusicSource.Play();
-
             m_PlayerInputsHandler = FindObjectOfType<PlayerInputHandler>();
 
+            SetMusic();
             LoadUI();
+        }
+
+        void SetMusic()
+        {
+            if (PlayerPrefs.GetString("FirstStart") == "yes") MusicSource.clip = WinMusics[ran.Next(0, WinMusics.Count)];
+            else
+            {
+                switch (PlayerPrefs.GetString("ResultEndGame"))
+                {
+                    case ("win"):
+                        MusicSource.clip = WinMusics[ran.Next(0, WinMusics.Count)];
+                        break;
+                    case ("lose"):
+                        MusicSource.clip = LoseMusics[ran.Next(0, WinMusics.Count)];
+                        break;
+                    case ("none"):
+                        MusicSource.clip = WinMusics[ran.Next(0, WinMusics.Count)];
+                        break;
+                }
+            }
+
+
+            if (MusicSource.clip.name == "Cafofo - AMB - Muffled Pop Music") MusicSource.volume = 1;
+            MusicSource.Play();
         }
 
         private void Update()
@@ -133,6 +154,7 @@ namespace naumnek.FPS
 
         public void Scenes(string scene) //загрузка уровня Tutorial
         {
+            PlayerPrefs.SetString("FirstStart", "no");
             foreach (GameObject copy in allMenu)
             {
                 copy.gameObject.SetActive(false);
@@ -159,6 +181,7 @@ namespace naumnek.FPS
 
         public void Exit() //выход из игры
         {
+            PlayerPrefs.SetString("FirstStart", "yes");
             Application.Quit();
         }
     }

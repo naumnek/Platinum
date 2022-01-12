@@ -14,10 +14,7 @@ namespace LowLevelGenerator.Scripts
 
         private void OnTriggerStay(Collider other)
         {
-            if (!player && other.tag == "Player")
-            {
-                player = true;
-            }
+            if (!player && other.tag == "Player") player = true;           
         }
 
         private void OnTriggerExit(Collider other)

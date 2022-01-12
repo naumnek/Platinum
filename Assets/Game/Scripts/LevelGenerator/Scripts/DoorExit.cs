@@ -10,13 +10,16 @@ namespace LowLevelGenerator.Scripts
     {
         public GameObject Structure;
         public DoorTrigger doorTrigger;
-        public bool LockedRoom = false;
+        public float PlayerRecheckTime = 0.5f;
+        bool LockedRoom = false;
+        [HideInInspector]
         public bool isClosing = false;
-        public AnimationClip ClosedDoorAnimation;
+        [HideInInspector]
         public Animator anim;
-        DoorExit door;
+        [HideInInspector]
         public List<Section> Sections = new List<Section>();
-        public Section PlayerSection => Sections.Where(s => s.Bound.player).First();
+        Section PlayerSection => Sections.Where(s => s.Bound.player).First();
+        DoorExit door;
 
         bool EndOpened = true;
 
@@ -29,9 +32,9 @@ namespace LowLevelGenerator.Scripts
 
         public void OpenDoor()
         {
-            if (PlayerSection.Matched)
+            if (PlayerSection != null && PlayerSection.Matched)
             {
-                if(!isClosing && EndOpened)
+                if (!isClosing && EndOpened)
                 {
                     Sections[0].SetActiveSection(this, true);
                     isClosing = true;
@@ -39,7 +42,16 @@ namespace LowLevelGenerator.Scripts
                     anim.SetBool("Open", true);
                 }
             }
+            else RecheckPlayer();
         }
+
+        IEnumerator RecheckPlayer()
+        {
+            yield return new WaitForSeconds(PlayerRecheckTime);
+            OpenDoor();
+
+        }
+
         public void ClosedDoor()
         {
             if(EndOpened) anim.SetBool("Open", false);

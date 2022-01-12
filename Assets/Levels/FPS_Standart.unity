@@ -770,23 +770,23 @@ PrefabInstance:
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: AllMusics.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: AllMusics.Array.data[0]
       value: 
-      objectReference: {fileID: 8300000, guid: cb3bf889833e1784f865059ddae4e793, type: 3}
+      objectReference: {fileID: 8300000, guid: b6809a59a467e8b4ea15e5298ed9c221, type: 3}
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: AllMusics.Array.data[1]
       value: 
-      objectReference: {fileID: 8300000, guid: 003153c6188672a4780c9f01be9898cb, type: 3}
+      objectReference: {fileID: 8300000, guid: 3cb450d98e73fcb4d8bbe251dade2130, type: 3}
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: AllMusics.Array.data[2]
       value: 
-      objectReference: {fileID: 8300000, guid: 0aa2bfc8e1fa0a749aa1314bba42ce4a, type: 3}
+      objectReference: {fileID: 8300000, guid: 870f0e02525c8284f999427d5a6bced1, type: 3}
     - target: {fileID: 1315839542190839937, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
       propertyPath: m_RootOrder

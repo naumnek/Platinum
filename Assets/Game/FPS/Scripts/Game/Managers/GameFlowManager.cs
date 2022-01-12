@@ -10,6 +10,7 @@ namespace Unity.FPS.Game
         [Header("Parameters")]
         public AudioSource MusicSource;
         public List<AudioClip> AllMusics = new List<AudioClip>();
+        int NumberMusic;
         System.Random ran = new System.Random();
 
         [Tooltip("Duration of the fade-to-black at the end of the game")]
@@ -43,7 +44,9 @@ namespace Unity.FPS.Game
 
         void Awake()
         {
-            EventManager.AddListener<OnExitMenu>(OnExitMenu);
+            EventManager.AddListener<SwitchMusicEvent>(OnSwitchMusic);
+            EventManager.AddListener<GamePauseEvent>(OnGamePause);
+            EventManager.AddListener<ExitMenu>(OnExitMenu);
             EventManager.AddListener<AllObjectivesCompletedEvent>(OnAllObjectivesCompleted);
             EventManager.AddListener<PlayerDeathEvent>(OnPlayerDeath);
         }
@@ -51,8 +54,42 @@ namespace Unity.FPS.Game
         void Start()
         {
             AudioUtility.SetMasterVolume(1);
-            MusicSource.clip = AllMusics[ran.Next(0, AllMusics.Count)];
+            SetMusic(ran.Next(0, AllMusics.Count));
             MusicSource.Play();
+        }
+
+        void OnGamePause(GamePauseEvent evt)
+        {
+            if (evt.Pause) MusicSource.Pause();
+            else MusicSource.Play();
+        }
+
+        void OnSwitchMusic(SwitchMusicEvent evt)
+        {
+            switch (evt.SwitchMusic)
+            {
+                case ("left"):
+                    SetMusic(0);
+                    break;
+                case ("right"):
+                    SetMusic(1);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void SetMusic(int Switch)
+        {
+            if(NumberMusic == AllMusics.Count && Switch == 1) NumberMusic = 0;
+            if (NumberMusic == 0 && Switch == -1) NumberMusic = AllMusics.Count;
+            else NumberMusic += Switch;
+            print("NumberMusic: " + NumberMusic);
+            MusicSource.clip = AllMusics[NumberMusic - 1];
+            SwitchMusicEvent evt = Events.SwitchMusicEvent;
+            evt.Music = AllMusics[NumberMusic - 1];
+            evt.SwitchMusic = "none";
+            EventManager.Broadcast(evt);
         }
 
         void Update()
@@ -73,16 +110,16 @@ namespace Unity.FPS.Game
                 }
             }
         }
-        void OnExitMenu(OnExitMenu evt) => EndGame(false);
+        void OnExitMenu(ExitMenu evt) => ResultEndGame(false);
 
         void OnAllObjectivesCompleted(AllObjectivesCompletedEvent evt)
         {
-            EndGame(true); 
+            ResultEndGame(true); 
         }
 
-        void OnPlayerDeath(PlayerDeathEvent evt) => EndGame(false);
+        void OnPlayerDeath(PlayerDeathEvent evt) => ResultEndGame(false);
 
-        void EndGame(bool win)
+        void ResultEndGame(bool win)
         {
             // unlocks the cursor before leaving the scene, to be able to click buttons
             //Cursor.lockState = CursorLockMode.None;
@@ -93,6 +130,8 @@ namespace Unity.FPS.Game
             //EndGameFadeCanvasGroup.gameObject.SetActive(true);
             if (win)
             {
+                PlayerPrefs.SetString("ResultEndGame", "win");
+
                 m_SceneToLoad = WinSceneName;
                 m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay + DelayBeforeFadeToBlack;
 
@@ -120,6 +159,8 @@ namespace Unity.FPS.Game
             }
             else
             {
+                PlayerPrefs.SetString("ResultEndGame", "lose");
+
                 m_SceneToLoad = LoseSceneName;
                 m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay;
             }

@@ -18,6 +18,7 @@ namespace Unity.FPS.UI
         public float VolumeWhenMenuOpen = 0.5f;
 
         public Slider MusicVolume;
+        public TMP_InputField SwitchMusic;
         public AudioMixer MusicMixer;
 
         [Tooltip("Slider component for look sensitivity")]
@@ -37,6 +38,11 @@ namespace Unity.FPS.UI
         PlayerInputHandler m_PlayerInputsHandler;
         Health m_PlayerHealth;
         FramerateCounter m_FramerateCounter;
+
+        void Awake()
+        {
+            EventManager.AddListener<SwitchMusicEvent>(OnSwitchMusic);
+        }
 
         void Start()
         {
@@ -105,7 +111,7 @@ namespace Unity.FPS.UI
 
         public void Exit()
         {
-            EventManager.Broadcast(Events.OnExitMenu);
+            EventManager.Broadcast(Events.ExitMenu);
             SetPauseMenuActivation(false);
         }
 
@@ -116,6 +122,10 @@ namespace Unity.FPS.UI
 
         void SetPauseMenuActivation(bool active)
         {
+            GamePauseEvent evt = Events.GamePauseEvent;
+            evt.Pause = active;
+            EventManager.Broadcast(evt);
+
             MenuRoot.SetActive(active);
 
             if (MenuRoot.activeSelf)
@@ -123,7 +133,7 @@ namespace Unity.FPS.UI
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 Time.timeScale = 0f;
-                AudioUtility.SetMasterVolume(VolumeWhenMenuOpen);
+                //AudioUtility.SetMasterVolume(VolumeWhenMenuOpen);
 
                 EventSystem.current.SetSelectedGameObject(null);
             }
@@ -132,7 +142,7 @@ namespace Unity.FPS.UI
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
                 Time.timeScale = 1f;
-                AudioUtility.SetMasterVolume(1);
+                //AudioUtility.SetMasterVolume(1);
             }
 
         }
@@ -142,6 +152,20 @@ namespace Unity.FPS.UI
             slider.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (slider.value * 4).ToString();
             MusicMixer.SetFloat("musicVolume", -(25 - slider.value));
         }
+
+        void OnSwitchMusic(SwitchMusicEvent evt)
+        {
+            SwitchMusic.text = evt.Music.name;
+        }
+
+        public void SetSwitchMusic(string Switch) //установка громкости звука
+        {
+            SwitchMusicEvent evt = Events.SwitchMusicEvent;
+            evt.SwitchMusic = Switch;
+            EventManager.Broadcast(evt);
+        }
+
+
 
         public void SetLookSensitivity(Slider slider)
         {

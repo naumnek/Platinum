@@ -9543,6 +9543,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: fc9d9aeef4a9ca94fad0d0c148342686, type: 3}
   - {fileID: 8300000, guid: 0df702270f829af4b8ecdd8682714d34, type: 3}
   - {fileID: 8300000, guid: 926de0017e9197246b7b063d65bf0134, type: 3}
+  - {fileID: 8300000, guid: 060e08794b4b8c647a6ad66daf47d2cb, type: 3}
   Background: {fileID: 847055550}
   BackgroundSprites:
   - {fileID: 21300000, guid: 0c9320aef79a5434984b552357eeddd9, type: 3}
