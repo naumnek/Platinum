@@ -3767,7 +3767,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 0.5019608}
-  m_Text: 
+  m_Text: -1144368951
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -9539,11 +9539,13 @@ MonoBehaviour:
   Seed: {fileID: 594854407}
   MusicMixer: {fileID: 24100000, guid: 3f6bbd8a7f0ba6b459475d4fe6c4b29f, type: 2}
   MusicSource: {fileID: 540184751}
-  AllMusics:
-  - {fileID: 8300000, guid: fc9d9aeef4a9ca94fad0d0c148342686, type: 3}
-  - {fileID: 8300000, guid: 0df702270f829af4b8ecdd8682714d34, type: 3}
+  WinMusics:
   - {fileID: 8300000, guid: 926de0017e9197246b7b063d65bf0134, type: 3}
+  - {fileID: 8300000, guid: 0df702270f829af4b8ecdd8682714d34, type: 3}
+  LoseMusics:
+  - {fileID: 8300000, guid: 04d298e12aa84e749982d221664aa2c5, type: 3}
   - {fileID: 8300000, guid: 060e08794b4b8c647a6ad66daf47d2cb, type: 3}
+  - {fileID: 8300000, guid: fc9d9aeef4a9ca94fad0d0c148342686, type: 3}
   Background: {fileID: 847055550}
   BackgroundSprites:
   - {fileID: 21300000, guid: 0c9320aef79a5434984b552357eeddd9, type: 3}

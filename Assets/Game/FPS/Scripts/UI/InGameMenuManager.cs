@@ -111,7 +111,7 @@ namespace Unity.FPS.UI
 
         public void Exit()
         {
-            EventManager.Broadcast(Events.ExitMenu);
+            EventManager.Broadcast(Events.ExitMenuEvent);
             SetPauseMenuActivation(false);
         }
 

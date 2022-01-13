@@ -6,6 +6,7 @@ using System;
 using UnityEngine.UI;
 using LowLevelGenerator.Scripts.Helpers;
 using TMPro;
+using Unity.FPS.Game;
 
 
 namespace naumnek.FPS
@@ -34,7 +35,7 @@ namespace naumnek.FPS
         private Animator anim;
         private Animator clockanim;
 
-        void Start() //запускаем самый первый процесс
+        void Awake() //запускаем самый первый процесс
         {
             instance = this;
             clockanim = clock.GetComponent<Animator>();
@@ -49,7 +50,7 @@ namespace naumnek.FPS
         {
             return instance.LevelSeed;
         }
-
+        
         public static void LoadScene(string scene, int seed)
         {
             instance.SwitchSceme(scene, seed);
@@ -57,16 +58,17 @@ namespace naumnek.FPS
 
         void SwitchSceme(string scene, int seed)
         {
+            EventManager.RemoveListener<EndGenerationEvent>(OnEndGeneration);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = false;
             loadscene = scene;
+            LevelSeed = seed;
             anim.SetTrigger("Visibly");
             clockanim.SetTrigger("ClockWait");
             if (loadscene == "MainMenu")
             {
-                LoadManager.Unload();
+                EventManager.Broadcast(Events.ExitMenuEvent);
             }
-            else if (seed == 0) LevelSeed = RandomService.Seed;
             loadingSceneOperation = SceneManager.LoadSceneAsync(scene);
             loadingSceneOperation.allowSceneActivation = false;
         }
@@ -80,20 +82,34 @@ namespace naumnek.FPS
             }
             else
             {
-                LoadManager.Load();
+
             }
         }
 
         public void StartLoadScene()
         {
-            if (loadscene != "MainMenu")
-            {
-                //mainMenu = MenuController.GetMenuController();
-                //mainMenu.gameObject.SetActive(false);
-            }
             loadingSceneOperation.allowSceneActivation = true;
-            anim.SetTrigger("Unvisibly");
             load = false;
+        }
+
+        void OnLevelWasLoaded()
+        {
+            if (loadscene == "MainMenu")
+            {
+                anim.SetTrigger("Unvisibly");
+            }
+            else
+            {
+                EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
+                StartGenerationEvent evt = Events.StartGenerationEvent;
+                evt.Seed = LevelSeed;
+                EventManager.Broadcast(evt);
+            }
+        }
+
+        public void OnEndGeneration(EndGenerationEvent evt)
+        {
+            anim.SetTrigger("Unvisibly");
         }
 
         public void LoadMenu(bool active)
@@ -113,6 +129,11 @@ namespace naumnek.FPS
                 ValueLoading.text = (Mathf.RoundToInt(loadingSceneOperation.progress * 100)).ToString() + "%";
                 ValueLoadingBar.fillAmount = loadingSceneOperation.progress;
             }
+        }
+
+        private void OnDestroy()
+        {
+            EventManager.RemoveListener<EndGenerationEvent>(OnEndGeneration);
         }
     }
 

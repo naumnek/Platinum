@@ -565,7 +565,7 @@ MonoBehaviour:
   Seed: -1278045905
   SectionContainer: {fileID: 0}
   MaxLevelSize: 50
-  MaxLevels: 1
+  LevelSize: 0
   MaxAllowedOrder: 12
   EnableMinAllowedOrder: 0
   Sections:
@@ -583,7 +583,6 @@ MonoBehaviour:
   - Tag: spawn
     MinAmount: 1
     MaxAmount: 1
-  LevelSize: 50
   RegisteredSections: []
 --- !u!4 &1437678821
 Transform:

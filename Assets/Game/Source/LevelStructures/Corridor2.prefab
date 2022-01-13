@@ -2042,8 +2042,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7575e2306da55cd4595a01cf3975a090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: 0
-  section: {fileID: 0}
+  MainBound: {fileID: 8458978112186695917}
+  ParentSection: {fileID: 0}
 --- !u!1 &2306952702362437094
 GameObject:
   m_ObjectHideFlags: 0
@@ -20968,7 +20968,7 @@ MonoBehaviour:
   - {fileID: 2519250893824742368}
   - {fileID: 6839442768557744944}
   - {fileID: 880118915281781537}
-  EndGenerateAnnexes: 0
+  ExitsCompleted: 0
   Bound: {fileID: 8065983950453343534}
   ParentCollider: {fileID: 1073034577484738316}
   Structure: {fileID: 1034740443598637642}
@@ -20978,8 +20978,9 @@ MonoBehaviour:
   FlankDoors: []
   DeadEnds: []
   FlankSections: []
-  RandomDeadEnds: []
+  ValidDeadEnds: []
   Enemys: []
+  ParentSection: {fileID: 0}
 --- !u!1 &7902061213776976313
 GameObject:
   m_ObjectHideFlags: 0

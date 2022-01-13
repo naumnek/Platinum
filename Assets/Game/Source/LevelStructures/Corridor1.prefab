@@ -89,7 +89,7 @@ MonoBehaviour:
   - spawn
   Exits:
   - {fileID: 5305242277783375133}
-  EndGenerateAnnexes: 0
+  ExitsCompleted: 0
   Bound: {fileID: 6628582212299633759}
   ParentCollider: {fileID: 5117817671951290958}
   Structure: {fileID: 7505292354896308278}
@@ -99,8 +99,9 @@ MonoBehaviour:
   FlankDoors: []
   DeadEnds: []
   FlankSections: []
-  RandomDeadEnds: []
+  ValidDeadEnds: []
   Enemys: []
+  ParentSection: {fileID: 0}
 --- !u!1 &2008371194923141552
 GameObject:
   m_ObjectHideFlags: 0
@@ -5135,8 +5136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7575e2306da55cd4595a01cf3975a090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: 0
-  section: {fileID: 0}
+  MainBound: {fileID: 2175941413699231248}
+  ParentSection: {fileID: 0}
 --- !u!1 &8817708446040160341
 GameObject:
   m_ObjectHideFlags: 0

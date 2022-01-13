@@ -46,7 +46,7 @@ namespace Unity.FPS.Game
         {
             EventManager.AddListener<SwitchMusicEvent>(OnSwitchMusic);
             EventManager.AddListener<GamePauseEvent>(OnGamePause);
-            EventManager.AddListener<ExitMenu>(OnExitMenu);
+            EventManager.AddListener<ExitMenuEvent>(OnExitMenu);
             EventManager.AddListener<AllObjectivesCompletedEvent>(OnAllObjectivesCompleted);
             EventManager.AddListener<PlayerDeathEvent>(OnPlayerDeath);
         }
@@ -54,7 +54,13 @@ namespace Unity.FPS.Game
         void Start()
         {
             AudioUtility.SetMasterVolume(1);
-            NumberMusic = ran.Next(0, AllMusics.Count - 1);
+            NumberMusic = ran.Next(0, AllMusics.Count);
+            int l = AllMusics.Count;
+            string random = "/";
+            for (int i = 0; i < 10; i++)
+            {
+                random += ran.Next(0, l);
+            }
             SetMusic();
             MusicSource.Play();
         }
@@ -84,7 +90,6 @@ namespace Unity.FPS.Game
         {
             if (NumberMusic < 0) NumberMusic = AllMusics.Count - 1;
             if (NumberMusic > AllMusics.Count - 1) NumberMusic = 0;
-            print("NumberMusic: " + NumberMusic + "/" + AllMusics.Count);
             MusicSource.clip = AllMusics[NumberMusic];
             SwitchMusicEvent evt = Events.SwitchMusicEvent;
             evt.Music = AllMusics[NumberMusic];
@@ -110,7 +115,7 @@ namespace Unity.FPS.Game
                 }
             }
         }
-        void OnExitMenu(ExitMenu evt) => ResultEndGame(false);
+        void OnExitMenu(ExitMenuEvent evt) => ResultEndGame(false);
 
         void OnAllObjectivesCompleted(AllObjectivesCompletedEvent evt)
         {

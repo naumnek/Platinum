@@ -9,8 +9,14 @@ namespace LowLevelGenerator.Scripts
     {
         public IEnumerable<Collider> GetColliders => GetComponentsInChildren<Collider>();
 
+        public Collider MainBound;
         public Section ParentSection;
         bool player = false;
+
+        private void Awake()
+        {
+            MainBound = GetComponent<Collider>();
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -18,7 +24,7 @@ namespace LowLevelGenerator.Scripts
             {
                 player = true;
                 ParentSection.OnTriggerPlayer(true);
-            }        
+            }
         }
 
         private void OnTriggerExit(Collider other)

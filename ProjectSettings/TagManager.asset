@@ -12,6 +12,7 @@ TagManager:
   - Timer
   - Spawnpoint
   - Enemy
+  - Section
   layers:
   - Default
   - TransparentFX

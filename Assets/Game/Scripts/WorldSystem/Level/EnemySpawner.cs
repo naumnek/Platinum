@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using LowLevelGenerator.Scripts;
+using Unity.FPS.Game;
 
 namespace naumnek.FPS
 {
@@ -75,9 +76,10 @@ namespace naumnek.FPS
         void Awake()
         {
             instance = this;
+            EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
         }
 
-        public static void MainStart()
+        void OnEndGeneration(EndGenerationEvent evt)
         {
             switch (instance.StartVariant)
             {
@@ -99,7 +101,7 @@ namespace naumnek.FPS
         }
         private void start2()
         {
-            LoadManager.Load();
+
         }
     }
 

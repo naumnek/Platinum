@@ -5,11 +5,20 @@ using LowLevelGenerator.Scripts.Helpers;
 using LowLevelGenerator.Scripts.Structure;
 using UnityEngine;
 using naumnek.FPS;
+using Unity.FPS.Game;
+using System;
+using System.Collections;
 
 namespace LowLevelGenerator.Scripts
 {
     public class LevelGenerator : MonoBehaviour
     {
+        public bool NewGeneration = false;
+
+        public bool WhileNewGeneration = false;
+
+        public bool CustomStartGeneration = false;
+
         /// <summary>
         /// LevelGenerator seed
         /// </summary>
@@ -24,8 +33,9 @@ namespace LowLevelGenerator.Scripts
         /// Maximum level size measured in sections
         /// </summary>
         public int MaxLevelSize;
+        public int LevelSize = 0;
 
-        public int MaxLevels = 1;
+        public float WaitGenerateSection = 0.1f;
 
         /// <summary>
         /// Maximum allowed distance from the original section
@@ -58,95 +68,139 @@ namespace LowLevelGenerator.Scripts
         /// </summary>
         public TagRule[] SpecialRules;
 
-        public int LevelSize;
-
         [HideInInspector]
-        protected List<Collider> RegisteredColliders = new List<Collider>();
-        [HideInInspector]
-        protected List<Collider> DoorColliders = new List<Collider>();
+        public List<Collider> RegisteredColliders = new List<Collider>();
 
         public List<Section> RegisteredSections = new List<Section>();
 
-        protected bool HalfLevelBuilt => RegisteredSections.Count > LevelSize;
+        Section StartSection;
+        System.Random ran = new System.Random();
 
-        protected void Start()
+        private void Awake()
         {
-            Seed = FileManager.GetFileManager().LevelSeed;
+            EventManager.AddListener<StartGenerationEvent>(OnStartGeneration);
+        }
+
+        void Start()
+        {
+            if (CustomStartGeneration) OnStartGeneration(null);
+        }
+
+        protected void CreateInitialSection()
+        {
+            StartSection = Instantiate(PickSectionWithTag(InitialSectionTags), transform);
+            StartSection.transform.SetParent(SectionContainer, false);
+            StartSection.Initialize(this, 0);
+        }
+
+        protected void OnStartGeneration(StartGenerationEvent evt)
+        {
+            LevelSize = 0;
+
             if (EnableMinAllowedOrder && MaxAllowedOrder > MaxLevelSize / 2) MaxAllowedOrder = MaxLevelSize / 2;
-            LevelSize = MaxLevelSize;
-            if (SectionContainer == null) SectionContainer = transform;
-            if (Seed != 0)
-                RandomService.SetSeed(Seed);
-            else
-                Seed = RandomService.Seed;
-            
+            if (SectionContainer == null)
+            {
+                SectionContainer = new GameObject("SectionContainer").transform;
+                SectionContainer.SetParent(transform);
+            }
+
+            if (evt != null) Seed = evt.Seed;
+            if (Seed == 0) Seed = ran.Next(Int32.MinValue, Int32.MaxValue);
+            RandomService.SetSeed(Seed);
+
             CreateInitialSection();
         }
         public void RegisterNewSection(Section newSection)
-        {
+        {            
             newSection.transform.SetParent(SectionContainer);
             RegisteredSections.Add(newSection);
-            RegisteredColliders.AddRange(newSection.Bound.GetColliders);
-            if (LevelSize < 1 && SectionContainer.childCount == RegisteredSections.Count)
+            if (RegisteredSections.Count == LevelSize)
             {
-                print("EndGeneration!");
-                if (GameObject.FindGameObjectWithTag("SaveObjects") != null)
+                print("LevelSize: " + LevelSize + "/" + RegisteredSections.Count);
+                if (LevelSize >= MaxLevelSize)
                 {
-                    EndGeneration();
+                    if (CustomStartGeneration)
+                    {
+                        if(NewGeneration) WhileNewGeneration = true;
+                        print("EndGeneration: " + Seed);
+                    }
+                    else EndGeneration();
                 }
-
+                else
+                {
+                    WhileNewGeneration = false;
+                    if (CustomStartGeneration) print("ErrorSeed: " + Seed);
+                    CheckRandomSection();
+                }
             }
-        }
+        }     
 
         public void CheckRandomSection()
         {
-            if (RegisteredSections.All(s => s.EndGenerateAnnexes && RegisteredSections.Count < MaxLevelSize))
+            print("CheckRandomSection");
+            bool RespawnSection = true;
+            for (int i = 0; i < RegisteredSections.Count; i++)
             {
-                for (int i = 0; i < RegisteredSections.Count; i++)
+                if (RegisteredSections[i].ValidDeadEnds.Count > 0)
                 {
-                    if (RegisteredSections[i].RandomDeadEnds.Count != 0)
+                    for (int ii = 0; ii < RegisteredSections[i].ValidDeadEnds.Count; ii++)
                     {
-                        for (int ii = 0; ii < RegisteredSections[i].RandomDeadEnds.Count; ii++)
+                        if (RespawnSection)
                         {
-                            GameObject obj = RegisteredSections[i].RandomDeadEnds[ii];
+                            RespawnSection = false;
+                            GameObject obj = RegisteredSections[i].ValidDeadEnds[ii];
                             RegisteredSections[i].DeadEnds.Remove(obj);
-                            RegisteredSections[i].RandomDeadEnds.Remove(obj);
-                            RegisteredSections[i].GenerateSection(obj.transform);
+                            RegisteredSections[i].ValidDeadEnds.Remove(obj);
+                            RegisteredSections[i].ExitsCompleted--;
+                            StartCoroutine(RegisteredSections[i].GenerateSection(RegisteredSections[i].TransformValidDeadEnds[ii]));
+                            print("Rewrite: " + obj.gameObject.name + " - " + RegisteredSections[i].ValidDeadEnds.Count);
                             Destroy(obj.gameObject);
-
                         }
                     }
                 }
             }
         }
 
-        public void EndGeneration()
+        private void Update()
         {
-
-            DeactivateBounds();
-            EnemySpawner.MainStart();
+            if(LevelSize >= MaxLevelSize && WhileNewGeneration)
+            {
+                WhileNewGeneration = false;
+                StartCoroutine(NewGenerationLevels());
+            }
+        }
+        IEnumerator NewGenerationLevels()
+        {
+            yield return new WaitForSeconds(WaitGenerateSection * 10);
+            RegisteredSections.Clear();
+            RegisteredColliders.Clear();
+            Destroy(SectionContainer.gameObject);
+            SectionContainer = new GameObject("SectionContainer").transform;
+            SectionContainer.SetParent(transform);
+            Seed = 0;
+            OnStartGeneration(null);
         }
 
-        protected void CreateInitialSection()
+        void EndGeneration()
         {
-            Section sec = Instantiate(PickSectionWithTag(InitialSectionTags), transform);
-            LevelSize--;
-            sec.transform.SetParent(SectionContainer, false);
-            RegisterNewSection(sec);
-            sec.Initialize(this, 0);
-            if (sec.Structure.activeSelf)
+            print("EndGeneration!");
+            if (StartSection.Structure.activeSelf)
             {
-                foreach (DoorExit copy2 in sec.Doors) copy2.Structure.SetActive(true);
-                foreach (GameObject copy2 in sec.DeadEnds) copy2.SetActive(true);
+                foreach (DoorExit copy2 in StartSection.FlankDoors) copy2.Structure.SetActive(true);
             }
+            EventManager.Broadcast(Events.EndGenerationEvent);
         }
 
         public void AddSectionTemplate() => Instantiate(Resources.Load("SectionTemplate"), Vector3.zero, Quaternion.identity);
         public void AddDeadEndTemplate() => Instantiate(Resources.Load("DeadEndTemplate"), Vector3.zero, Quaternion.identity);
 
-        public bool IsSectionValid(BoundSection newSection, BoundSection sectionToIgnore) => 
-            !RegisteredColliders.Except(sectionToIgnore.GetColliders).Any(c => c.bounds.Intersects(newSection.GetColliders.First().bounds));
-
+        public bool IsSectionsIntersect(BoundSection newSection, BoundSection sectionToIgnore)
+        {
+            List<Collider> Colliders = RegisteredColliders;
+            List<Collider> IgnoreColliders = new List<Collider>() { sectionToIgnore.MainBound };
+            return Colliders.Except(IgnoreColliders).Any(c => c != null && c.bounds.Intersects(newSection.MainBound.bounds));
+        }
+        
 
         public Section PickSectionWithTag(string[] tags)
         {
@@ -164,13 +218,5 @@ namespace LowLevelGenerator.Scripts
         }
 
         protected bool RulesContainTargetTags(string[] tags) => tags.Intersect(SpecialRules.Where(r => r.NotSatisfied).Select(r => r.Tag)).Any();
-
-        protected void DeactivateBounds()
-        {
-            /*foreach (Collider copy in RegisteredColliders)
-            {
-                copy.enabled = false;
-            }*/
-        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.FPS.Game;
 
 
 namespace naumnek.FPS
@@ -10,20 +11,22 @@ namespace naumnek.FPS
         public GameObject general;
         private static LoadManager instance;
 
-        void Start()
+        void Awake()
         {
             instance = this;
+            EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
+            EventManager.AddListener<ExitMenuEvent>(OnExitMenu);
         }
 
         // Start is called before the first frame update
-        public static void Load()
+        public void OnEndGeneration(EndGenerationEvent evt)
         {
-            instance.general.SetActive(true);
+            general.SetActive(true);
             NavMeshGenerate.Build();
         }
-        public static void Unload()
+        public void OnExitMenu(ExitMenuEvent evt)
         {
-            instance.general.SetActive(false);
+            general.SetActive(false);
         }
     }
 }

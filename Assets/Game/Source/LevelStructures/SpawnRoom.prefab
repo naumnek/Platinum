@@ -1276,17 +1276,19 @@ MonoBehaviour:
   - corridor
   Exits:
   - {fileID: 6245267819859978987}
-  EndGenerateAnnexes: 0
+  ExitsCompleted: 0
   Bound: {fileID: 8562105104290076341}
   ParentCollider: {fileID: 4604028729950110969}
   Structure: {fileID: 6168358800039655324}
   Spawner: {fileID: 3324045552144980676}
   DeadEndChance: 0
   Doors: []
+  FlankDoors: []
   DeadEnds: []
   FlankSections: []
-  FlankDoors: []
-  RandomDeadEnds: []
+  ValidDeadEnds: []
+  Enemys: []
+  ParentSection: {fileID: 0}
 --- !u!1 &6245267819192094892
 GameObject:
   m_ObjectHideFlags: 0
@@ -1487,7 +1489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7575e2306da55cd4595a01cf3975a090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: 0
+  MainBound: {fileID: 6245267819415165199}
+  ParentSection: {fileID: 0}
 --- !u!1 &6245267819461452587
 GameObject:
   m_ObjectHideFlags: 0

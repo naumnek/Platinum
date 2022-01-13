@@ -5,6 +5,7 @@ using UnityEngine;
 using naumnek.FPS;
 using Unity.FPS.Game;
 using Unity.FPS.AI;
+using System.Collections;
 
 namespace LowLevelGenerator.Scripts
 {
@@ -26,8 +27,8 @@ namespace LowLevelGenerator.Scripts
         /// Exits node in hierarchy
         /// </summary>
         public List<Transform> Exits = new List<Transform>();
-        //check end generation exits in the section 
-        public bool EndGenerateAnnexes = false;
+        [HideInInspector]
+        public int ExitsCompleted = 0;
 
         public BoundSection Bound;
 
@@ -51,9 +52,13 @@ namespace LowLevelGenerator.Scripts
         [HideInInspector]
         public List<Section> FlankSections = new List<Section>();
         [HideInInspector]
-        public List<GameObject> RandomDeadEnds = new List<GameObject>();
+        public List<GameObject> ValidDeadEnds = new List<GameObject>();
+        [HideInInspector]
+        public List<Transform> TransformValidDeadEnds = new List<Transform>();
         [HideInInspector]
         public List<Transform> Enemys = new List<Transform>();
+
+        public Section ParentSection;
 
         public bool TriggerPlayer { get; private set; } = false;
 
@@ -64,65 +69,73 @@ namespace LowLevelGenerator.Scripts
 
         private void Awake()
         {
+            Bound = GetComponentInChildren<BoundSection>();
             Bound.ParentSection = this;
         }
 
         public void Initialize(LevelGenerator levelGenerator, int sourceOrder)
         {
-            Bound = GetComponentInChildren<BoundSection>();
             m_LevelGenerator = levelGenerator;
+
+            m_LevelGenerator.LevelSize++;
+            m_LevelGenerator.RegisteredColliders.Add(Bound.MainBound);
 
             ContainerDoors = new GameObject("Doors").transform;
             ContainerDoors.SetParent(transform);
             ContainerDeadEnds = new GameObject("DeadEnds").transform;
             ContainerDeadEnds.SetParent(Structure.transform);
 
-            if (Tags.First() == "spawn") EnemySpawner.InitializePlayer(Spawner);
-            if(Tags.First() == "room")
+            if (!m_LevelGenerator.CustomStartGeneration)
             {
-                Transform obj = EnemySpawner.ActivateSpawner(Spawner);
-                obj.GetComponent<EnemyController>().SpawnSection = this;
-                Enemys.Add(obj);
+                if (Tags.First() == "spawn") EnemySpawner.InitializePlayer(Spawner);
+                if (Tags.First() == "room")
+                {
+                    Transform obj = EnemySpawner.ActivateSpawner(Spawner);
+                    obj.GetComponent<EnemyController>().SpawnSection = this;
+                    Enemys.Add(obj);
+                }
             }
 
             order = sourceOrder + 1;
 
             GenerateAnnexes();
+            
         }
 
         protected void GenerateAnnexes()
         {
-            foreach (Transform copy in Exits)
+            for (int i = 0;i < Exits.Count;i++)
             {
-                if (m_LevelGenerator.LevelSize > 0 && order < m_LevelGenerator.MaxAllowedOrder)
+                if (m_LevelGenerator.LevelSize < m_LevelGenerator.MaxLevelSize && order < m_LevelGenerator.MaxAllowedOrder)
                 {
                     if (DeadEndChance != 0 && RandomService.RollD100(DeadEndChance))
                     {
-                        PlaceDeadEnd(copy,true); 
+                        PlaceDeadEnd(Exits[i], true); 
                     }
                     else
                     {
-                        GenerateSection(copy);
+                        StartCoroutine(GenerateSection(Exits[i]));
                     }
                 }
                 else 
                 {
-                    PlaceDeadEnd(copy, false); 
+                    PlaceDeadEnd(Exits[i], true);                    
                 }
-            }
-            EndGenerateAnnexes = true;
-            m_LevelGenerator.CheckRandomSection();
+                //if (i == Exits.Count - 1) m_LevelGenerator.RegisterNewSection(this);
+            }           
         }
 
-        public void GenerateSection(Transform exit)
+        public IEnumerator GenerateSection(Transform exit)
         {
             Section section = Instantiate(m_LevelGenerator.PickSectionWithTag(CreatesTags), exit);
-            if (m_LevelGenerator.IsSectionValid(section.Bound, Bound))
+
+            yield return new WaitForSeconds(m_LevelGenerator.WaitGenerateSection);
+
+            if (m_LevelGenerator.LevelSize < m_LevelGenerator.MaxLevelSize && !m_LevelGenerator.IsSectionsIntersect(section.Bound, Bound)) // && 
             {
-                m_LevelGenerator.LevelSize--;
                 section.transform.SetParent(m_LevelGenerator.SectionContainer);
-                m_LevelGenerator.RegisterNewSection(section);
                 section.FlankSections.Add(this);
+                section.ParentSection = this;
                 FlankSections.Add(section);
                 PlaceDoor(exit, section);
                 section.Initialize(m_LevelGenerator, order);
@@ -130,23 +143,35 @@ namespace LowLevelGenerator.Scripts
             else
             {
                 Destroy(section.gameObject);
-                PlaceDeadEnd(exit,false);
+                PlaceDeadEnd(exit, false);
             }
         }
 
+        bool EndGenerateAnnexes = false;
 
         //создаем на месте полученого Transform exit одну из стен в DeadEnds и заносим её в список DeadEndColliders 
-        protected void PlaceDeadEnd(Transform exit, bool random)
+        protected void PlaceDeadEnd(Transform exit, bool ValidDeadEnd)
         {
+            ExitsCompleted++;
             GameObject obj = Instantiate(m_LevelGenerator.DeadEnds.PickOne(), exit);
             obj.transform.SetParent(ContainerDeadEnds);
             DeadEnds.Add(obj);
-            if (random) RandomDeadEnds.Add(obj);
+            if (ValidDeadEnd)
+            {
+                ValidDeadEnds.Add(obj);
+                TransformValidDeadEnds.Add(exit);
+            }
+            if(!EndGenerateAnnexes && ExitsCompleted == Exits.Count)
+            {
+                EndGenerateAnnexes = true;
+                m_LevelGenerator.RegisterNewSection(this);
+            }
         }
 
         //создаем на месте полученого Transform exit одну из стен в DeadEnds и заносим её в список DeadEndColliders 
         protected void PlaceDoor(Transform exit, Section section)
         {
+            ExitsCompleted++;
             DoorExit obj = Instantiate(m_LevelGenerator.Doors.PickOne(), exit);
             obj.transform.SetParent(ContainerDoors);
             Doors.Add(obj);
@@ -154,6 +179,11 @@ namespace LowLevelGenerator.Scripts
             obj.Sections.Add(FlankSections.Last());
             FlankDoors.Add(obj);
             section.FlankDoors.Add(obj);
+            if(!EndGenerateAnnexes && ExitsCompleted == Exits.Count)
+            {
+                EndGenerateAnnexes = true;
+                m_LevelGenerator.RegisterNewSection(this);
+            }
         }
 
         public void OnTriggerPlayer(bool trigger)
