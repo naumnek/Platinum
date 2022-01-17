@@ -88,7 +88,7 @@ namespace LowLevelGenerator.Scripts
             if (!m_LevelGenerator.CustomStartGeneration)
             {
                 if (Tags.First() == "spawn") EnemySpawner.InitializePlayer(Spawner);
-                if (Tags.First() == "room")
+                if (!m_LevelGenerator.DisableSectionsParser && Tags.First() == "room")
                 {
                     Transform obj = EnemySpawner.ActivateSpawner(Spawner);
                     obj.GetComponent<EnemyController>().SpawnSection = this;
@@ -213,6 +213,7 @@ namespace LowLevelGenerator.Scripts
 
         public void SetActiveSection(DoorExit door, bool action)
         {
+            if (m_LevelGenerator.DisableSectionsParser) return;
             List<Section> EmptySections = new List<Section>();
             EmptySections.AddRange(door.Sections.Where(s => !s.TriggerPlayer)); 
 

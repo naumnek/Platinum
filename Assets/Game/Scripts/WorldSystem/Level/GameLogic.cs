@@ -18,7 +18,6 @@ namespace naumnek.FPS
         [Header("Other")]
         public Timer timer;
         EnemySpawner m_EnemySpawner;
-        bool load = true;
         private static GameLogic instance;
         int EnemyKilled = 0;
         int EnemySpawned = 0;

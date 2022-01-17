@@ -13,11 +13,7 @@ namespace LowLevelGenerator.Scripts
 {
     public class LevelGenerator : MonoBehaviour
     {
-        public bool NewGeneration = false;
-
-        public bool WhileNewGeneration = false;
-
-        public bool CustomStartGeneration = false;
+        [Header("General")]
 
         /// <summary>
         /// LevelGenerator seed
@@ -43,6 +39,16 @@ namespace LowLevelGenerator.Scripts
         public int MaxAllowedOrder;
         public bool EnableMinAllowedOrder;
 
+        [Header("Other")]
+        public bool DisableSectionsParser = false;
+
+        public bool NewGeneration = false;
+
+        public bool WhileNewGeneration = false;
+
+        public bool CustomStartGeneration = false;
+
+        [Header("Lists Objects")]
         /// <summary>
         /// Spawnable section prefabs
         /// </summary>
@@ -81,6 +87,11 @@ namespace LowLevelGenerator.Scripts
             EventManager.AddListener<StartGenerationEvent>(OnStartGeneration);
         }
 
+        private void OnDestroy()
+        {
+            EventManager.RemoveListener<StartGenerationEvent>(OnStartGeneration);
+        }
+
         void Start()
         {
             if (CustomStartGeneration) OnStartGeneration(null);
@@ -116,7 +127,6 @@ namespace LowLevelGenerator.Scripts
             RegisteredSections.Add(newSection);
             if (RegisteredSections.Count == LevelSize)
             {
-                print("LevelSize: " + LevelSize + "/" + RegisteredSections.Count);
                 if (LevelSize >= MaxLevelSize)
                 {
                     if (CustomStartGeneration)
@@ -128,8 +138,11 @@ namespace LowLevelGenerator.Scripts
                 }
                 else
                 {
-                    WhileNewGeneration = false;
-                    if (CustomStartGeneration) print("ErrorSeed: " + Seed);
+
+                    if (CustomStartGeneration)
+                    {
+                        print("ErrorSeed: " + Seed);
+                    }
                     CheckRandomSection();
                 }
             }
@@ -137,7 +150,6 @@ namespace LowLevelGenerator.Scripts
 
         public void CheckRandomSection()
         {
-            print("CheckRandomSection");
             bool RespawnSection = true;
             for (int i = 0; i < RegisteredSections.Count; i++)
             {
@@ -153,7 +165,6 @@ namespace LowLevelGenerator.Scripts
                             RegisteredSections[i].ValidDeadEnds.Remove(obj);
                             RegisteredSections[i].ExitsCompleted--;
                             StartCoroutine(RegisteredSections[i].GenerateSection(RegisteredSections[i].TransformValidDeadEnds[ii]));
-                            print("Rewrite: " + obj.gameObject.name + " - " + RegisteredSections[i].ValidDeadEnds.Count);
                             Destroy(obj.gameObject);
                         }
                     }

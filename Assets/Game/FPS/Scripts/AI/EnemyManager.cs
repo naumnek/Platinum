@@ -10,8 +10,6 @@ namespace Unity.FPS.AI
         public int NumberOfEnemiesTotal { get; private set; }
         public int NumberOfEnemiesRemaining => Enemies.Count;
 
-        bool PlayerLocked = false;
-
         void Awake()
         {
             Enemies = new List<EnemyController>();

@@ -41,7 +41,19 @@ namespace Unity.FPS.UI
 
         void Awake()
         {
+            EventManager.AddListener<StartGenerationEvent>(OnStartGeneration);
             EventManager.AddListener<SwitchMusicEvent>(OnSwitchMusic);
+        }
+
+        private void OnDestroy()
+        {
+            EventManager.RemoveListener<StartGenerationEvent>(OnStartGeneration);
+            EventManager.RemoveListener<SwitchMusicEvent>(OnSwitchMusic);
+        }
+
+        protected void OnStartGeneration(StartGenerationEvent evt)
+        {
+            LevelSeed = evt.Seed.ToString();
         }
 
         void Start()
@@ -55,8 +67,6 @@ namespace Unity.FPS.UI
 
             m_FramerateCounter = FindObjectOfType<FramerateCounter>();
             DebugUtility.HandleErrorIfNullFindObject<FramerateCounter, InGameMenuManager>(m_FramerateCounter, this);
-
-            LevelSeed = FileManager.GetSeed().ToString();
 
             ShadowsToggle.isOn = QualitySettings.shadows != ShadowQuality.Disable;
             FramerateToggle.isOn = m_FramerateCounter.UIText.gameObject.activeSelf;

@@ -566,8 +566,13 @@ MonoBehaviour:
   SectionContainer: {fileID: 0}
   MaxLevelSize: 50
   LevelSize: 0
+  WaitGenerateSection: 0.1
   MaxAllowedOrder: 12
   EnableMinAllowedOrder: 0
+  DisableSectionsParser: 0
+  NewGeneration: 0
+  WhileNewGeneration: 0
+  CustomStartGeneration: 0
   Sections:
   - {fileID: 7494600980841951042, guid: cd667c3ae74303b478df1f0c74be8e26, type: 3}
   - {fileID: 1682966660124422473, guid: 51076140797952a41829d91ed4f1b2b0, type: 3}
@@ -583,6 +588,7 @@ MonoBehaviour:
   - Tag: spawn
     MinAmount: 1
     MaxAmount: 1
+  RegisteredColliders: []
   RegisteredSections: []
 --- !u!4 &1437678821
 Transform:
@@ -2119,6 +2125,11 @@ PrefabInstance:
         type: 3}
       propertyPath: MaxHealth
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654785000476157827, guid: c2373c15cbb3dd2438363872e2b738c5,
+        type: 3}
+      propertyPath: JumpForce
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8953564592000956655, guid: c2373c15cbb3dd2438363872e2b738c5,
         type: 3}
