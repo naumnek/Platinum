@@ -36,6 +36,7 @@ namespace Unity.FPS.Game
         [Header("Lose")] [Tooltip("This string has to be the name of the scene you want to load when losing")]
         public string LoseSceneName = "MainMenu";
 
+        string Result = "None";
 
         public bool GameIsEnding { get; private set; }
 
@@ -99,19 +100,18 @@ namespace Unity.FPS.Game
 
         void Update()
         {
-            if (GameIsEnding)
+            if (GameIsEnding) // GameIsEnding
             {
                 float timeRatio = 1 - (m_TimeLoadEndGameScene - Time.time) / EndSceneLoadDelay;
                 //EndGameFadeCanvasGroup.alpha = timeRatio;
 
-                AudioUtility.SetMasterVolume(1 - timeRatio);
+                //AudioUtility.SetMasterVolume(1 - timeRatio);
 
                 // See if it's time to load the end scene (after the delay)
                 if (Time.time >= m_TimeLoadEndGameScene)
                 {
-                    FileManager.LoadScene(LoseSceneName, 0);
-                    FileManager.load = true;
                     GameIsEnding = false;
+                    FileManager.EndGame(WinSceneName, Result);
                 }
             }
         }
@@ -135,7 +135,7 @@ namespace Unity.FPS.Game
             //EndGameFadeCanvasGroup.gameObject.SetActive(true);
             if (win)
             {
-                PlayerPrefs.SetString("ResultEndGame", "win");
+                Result = "Win";
 
                 m_SceneToLoad = WinSceneName;
                 m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay + DelayBeforeFadeToBlack;
@@ -148,6 +148,7 @@ namespace Unity.FPS.Game
                 audioSource.playOnAwake = false;
                 audioSource.outputAudioMixerGroup = AudioUtility.GetAudioGroup(AudioUtility.AudioGroups.HUDVictory);
                 audioSource.PlayScheduled(AudioSettings.dspTime + DelayBeforeWinMessage);
+
 
                 // create a game message
                 //var message = Instantiate(WinGameMessagePrefab).GetComponent<DisplayMessage>();
@@ -164,15 +165,20 @@ namespace Unity.FPS.Game
             }
             else
             {
-                PlayerPrefs.SetString("ResultEndGame", "lose");
+                Result = "Lose";
 
                 m_SceneToLoad = LoseSceneName;
-                m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay;
+                m_TimeLoadEndGameScene = Time.time + EndSceneLoadDelay + DelayBeforeFadeToBlack;
+
+                FileManager.EndGame(LoseSceneName, "Lose");
             }
         }
 
         void OnDestroy()
         {
+            EventManager.RemoveListener<SwitchMusicEvent>(OnSwitchMusic);
+            EventManager.RemoveListener<GamePauseEvent>(OnGamePause);
+            EventManager.RemoveListener<ExitMenuEvent>(OnExitMenu);
             EventManager.RemoveListener<AllObjectivesCompletedEvent>(OnAllObjectivesCompleted);
             EventManager.RemoveListener<PlayerDeathEvent>(OnPlayerDeath);
         }

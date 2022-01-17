@@ -35,7 +35,7 @@ namespace naumnek.FPS
         //PRIVATE
         PlayerInputHandler m_PlayerInputsHandler;
         private static MenuController instance;
-        FileManager _fileManager;
+        FileManager m_FileManager;
         System.Random ran = new System.Random();
         List<Resolution> ScreenResolutions = new List<Resolution>();
 
@@ -56,7 +56,7 @@ namespace naumnek.FPS
 
         void SetMusic()
         {
-            if (PlayerPrefs.GetString("ResultEndGame") == "win")
+            if (m_FileManager != null && m_FileManager.ResultEndGame == "Win")
             {
                 NumberMusic = ran.Next(0, WinMusics.Count);
                 MusicSource.clip = WinMusics[NumberMusic];
@@ -68,15 +68,6 @@ namespace naumnek.FPS
             }
             if (MusicSource.clip.name == "Cafofo - AMB - Muffled Pop Music") MusicSource.volume = 1;
             MusicSource.Play();
-        }
-
-        private void Update()
-        {
-            if (!FileManager.load != startMenu.activeSelf && load)
-            {
-                load = false;
-                startMenu.SetActive(true);
-            }
         }
 
         private void LoadUI()
@@ -148,8 +139,6 @@ namespace naumnek.FPS
 
         public void Scenes(string scene) //загрузка уровня Tutorial
         {
-            PlayerPrefs.SetString("ResultEndGame", "none");
-            
             foreach (GameObject copy in allMenu)
             {
                 copy.gameObject.SetActive(false);
@@ -162,7 +151,6 @@ namespace naumnek.FPS
             {
                 FileManager.LoadScene(scene, Convert.ToInt32(Seed.text));
             }
-            FileManager.load = true;
         }
 
         public void SelectMenu(GameObject menu) //открыть главное меню и закрыть все остальные

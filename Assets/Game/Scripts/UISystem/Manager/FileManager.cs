@@ -25,6 +25,7 @@ namespace naumnek.FPS
         public Image ValueLoadingBar;
         public GameObject loading;
         public GameObject clock;
+        public string ResultEndGame = "None";
         //PRIVATE
         private string loadscene = "FirstLoadMenu";
         private GameObject Canvas;
@@ -40,6 +41,7 @@ namespace naumnek.FPS
             instance = this;
             clockanim = clock.GetComponent<Animator>();
             background_anim = loading.GetComponent<Animator>();
+            EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
             SceneManager.sceneLoaded += OnLevelFinishedLoading;
         }
 
@@ -48,16 +50,14 @@ namespace naumnek.FPS
             if (loadscene == "FirstLoadMenu") return;
             if (scene.name == "MainMenu")
             {
-
+                background_anim.SetTrigger("Unvisibly");
             }
             else
             {
-                EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
                 StartGenerationEvent evt = Events.StartGenerationEvent;
                 evt.Seed = LevelSeed;
                 EventManager.Broadcast(evt);
             }
-            background_anim.SetTrigger("Unvisibly");
         }
 
         public static FileManager GetFileManager()
@@ -68,32 +68,40 @@ namespace naumnek.FPS
         {
             return instance.LevelSeed;
         }
-        
-        public static void LoadScene(string scene, int seed)
+
+        public static void EndGame(string scene, string result)
         {
-            instance.SwitchSceme(scene, seed);
+            instance.ResultEndGame = result;
+            instance.SwitchSceme(scene);
         }
 
-        void SwitchSceme(string scene, int seed)
+        public static void LoadScene(string scene, int seed)
         {
-            LoadingCanvas.SetActive(true);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = false;
+            instance.LevelSeed = seed;
+            instance.SwitchSceme(scene);
+        }
+
+        void SwitchSceme(string scene)
+        {
+            load = true;
             loadscene = scene;
-            LevelSeed = seed;
-            background_anim.SetTrigger("Visibly");
-            clockanim.SetTrigger("ClockWait");
-            EventManager.RemoveListener<EndGenerationEvent>(OnEndGeneration);
             if (loadscene == "MainMenu")
             {
-                EventManager.Broadcast(Events.ExitMenuEvent);
+
             }
+            LoadingCanvas.SetActive(true);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            background_anim.SetTrigger("Visibly");
+            clockanim.SetTrigger("ClockWait");
             loadingSceneOperation = SceneManager.LoadSceneAsync(scene);
             loadingSceneOperation.allowSceneActivation = false;
         }
 
         public void EndLoadScene()
         {
+            load = false;
+            LoadingCanvas.SetActive(false);
             if (loadscene == "MainMenu")
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -103,7 +111,6 @@ namespace naumnek.FPS
             {
 
             }
-            LoadingCanvas.SetActive(false);
         }
 
         public void StartLoadScene()

@@ -15,7 +15,11 @@ namespace naumnek.FPS
         {
             instance = this;
             EventManager.AddListener<EndGenerationEvent>(OnEndGeneration);
-            EventManager.AddListener<ExitMenuEvent>(OnExitMenu);
+        }
+
+        private void OnDestroy()
+        {
+            EventManager.RemoveListener<EndGenerationEvent>(OnEndGeneration);
         }
 
         // Start is called before the first frame update
@@ -23,10 +27,6 @@ namespace naumnek.FPS
         {
             general.SetActive(true);
             NavMeshGenerate.Build();
-        }
-        public void OnExitMenu(ExitMenuEvent evt)
-        {
-            general.SetActive(false);
         }
     }
 }

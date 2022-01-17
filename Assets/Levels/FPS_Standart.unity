@@ -779,6 +779,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
         type: 3}
+      propertyPath: DelayBeforeFadeToBlack
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1315839542190839936, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
       propertyPath: AllMusics.Array.data[0]
       value: 
       objectReference: {fileID: 8300000, guid: b6809a59a467e8b4ea15e5298ed9c221, type: 3}
@@ -2035,6 +2040,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AllowMSAA
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2606858681737743744, guid: c2373c15cbb3dd2438363872e2b738c5,
+        type: 3}
+      propertyPath: m_ClearFlags
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2606858681737743744, guid: c2373c15cbb3dd2438363872e2b738c5,
         type: 3}

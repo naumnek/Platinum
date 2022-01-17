@@ -119,10 +119,10 @@ namespace Unity.FPS.UI
             }
         }
 
-        public void Exit()
+        public void Exit(Button button)
         {
-            EventManager.Broadcast(Events.ExitMenuEvent);
             SetPauseMenuActivation(false);
+            EventManager.Broadcast(Events.ExitMenuEvent);
         }
 
         public void ClosePauseMenu()
