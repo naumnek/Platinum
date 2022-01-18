@@ -33,7 +33,6 @@ namespace naumnek.FPS
         public List<Sprite> BackgroundSprites = new List<Sprite>();
         public bool load = true;
         //PRIVATE
-        PlayerInputHandler m_PlayerInputsHandler;
         private static MenuController instance;
         FileManager m_FileManager;
         System.Random ran = new System.Random();
@@ -47,7 +46,6 @@ namespace naumnek.FPS
         void Start() //запускаем самый первый процесс
         {
             instance = this;
-            m_PlayerInputsHandler = FindObjectOfType<PlayerInputHandler>();
 
             SetMusic();
 
@@ -89,6 +87,7 @@ namespace naumnek.FPS
             GraphicsQuality.value = PlayerPrefs.GetInt("GraphicsQuality");
             ScreenResolution.value = PlayerPrefs.GetInt("ScreenResolution");
             FullScreen.isOn = PlayerPrefs.GetString("FullScreen") == "True";
+
             print("EndLoad");
         }
 
@@ -99,6 +98,7 @@ namespace naumnek.FPS
             PlayerPrefs.SetInt("GraphicsQuality", GraphicsQuality.value);
             PlayerPrefs.SetInt("ScreenResolution", ScreenResolution.value);
             PlayerPrefs.SetString("FullScreen", FullScreen.isOn.ToString());
+
             PlayerPrefs.SetString("CheckSave", "yes");
             print("EndSave");
         }
