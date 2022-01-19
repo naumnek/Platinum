@@ -41,13 +41,11 @@ namespace Unity.FPS.UI
 
         void Awake()
         {
-            EventManager.AddListener<StartGenerationEvent>(OnStartGeneration);
             EventManager.AddListener<SwitchMusicEvent>(OnSwitchMusic);
         }
 
         private void OnDestroy()
         {
-            EventManager.RemoveListener<StartGenerationEvent>(OnStartGeneration);
             EventManager.RemoveListener<SwitchMusicEvent>(OnSwitchMusic);
         }
 
@@ -58,6 +56,8 @@ namespace Unity.FPS.UI
 
         void Start()
         {
+            LevelSeed = FileManager.GetSeed().ToString();
+
             m_PlayerInputsHandler = FindObjectOfType<PlayerInputHandler>();
             DebugUtility.HandleErrorIfNullFindObject<PlayerInputHandler, InGameMenuManager>(m_PlayerInputsHandler,
                 this);
@@ -200,8 +200,8 @@ namespace Unity.FPS.UI
 
         public void SetShowSeed()
         {
-            Seed.gameObject.SetActive(!Seed.gameObject.activeSelf);
             Seed.text = LevelSeed;
+            Seed.gameObject.SetActive(!Seed.gameObject.activeSelf);
         }
         public void SetSeed()
         {

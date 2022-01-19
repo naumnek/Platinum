@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.UI;
-using LowLevelGenerator.Scripts.Helpers;
 using TMPro;
 using Unity.FPS.Game;
 
@@ -35,6 +32,7 @@ namespace naumnek.FPS
         public static bool load = false;
         private Animator background_anim;
         private Animator clockanim;
+        System.Random ran = new System.Random();
 
         void Awake() //запускаем самый первый процесс
         {
@@ -54,6 +52,7 @@ namespace naumnek.FPS
             }
             else
             {
+                if (LevelSeed == 0) LevelSeed = ran.Next(Int32.MinValue, Int32.MaxValue);
                 StartGenerationEvent evt = Events.StartGenerationEvent;
                 evt.Seed = LevelSeed;
                 EventManager.Broadcast(evt);
