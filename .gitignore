@@ -20,6 +20,7 @@
 /[Aa]ssets/Import*
 
 #ignore import packages
+/[Aa]ssets/Game/Source/Graphics/Textures*
 /[Aa]ssets/Game/FPS/Animation*
 /[Aa]ssets/Game/FPS/Art*
 /[Aa]ssets/Game/FPS/Audio*
