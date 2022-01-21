@@ -422,7 +422,7 @@ MonoBehaviour:
   prefabPlayer: {fileID: 3728061568588972673, guid: c2373c15cbb3dd2438363872e2b738c5,
     type: 3}
   prefabEnemys:
-  - {fileID: 317118326870961143, guid: 1fa1c77a6a1da5a468c285c25a303f4c, type: 3}
+  - {fileID: 2746275382963785765, guid: 9ea176a51cdf66746964406becb49b4e, type: 3}
   emptyPlayer: {fileID: 0}
   m_BodyPlayer: {fileID: 2081347122}
   load: 1
