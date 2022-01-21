@@ -2136,6 +2136,16 @@ PrefabInstance:
       propertyPath: MaxHealth
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 5237154698488893086, guid: c2373c15cbb3dd2438363872e2b738c5,
+        type: 3}
+      propertyPath: field of view
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5237154698488893086, guid: c2373c15cbb3dd2438363872e2b738c5,
+        type: 3}
+      propertyPath: far clip plane
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6654785000476157827, guid: c2373c15cbb3dd2438363872e2b738c5,
         type: 3}
       propertyPath: JumpForce
