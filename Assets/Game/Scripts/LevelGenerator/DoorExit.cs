@@ -10,6 +10,7 @@ namespace LowLevelGenerator.Scripts
     {
         public GameObject Structure;
         public DoorTrigger doorTrigger;
+        public List<ParticleSystem> vfx_door = new List<ParticleSystem>();
         public float PlayerRecheckTime = 0.5f;
         [HideInInspector]
         public bool isClosing = false;
@@ -19,6 +20,7 @@ namespace LowLevelGenerator.Scripts
         public List<Section> Sections = new List<Section>();
         public bool PlayerSectionMatched = false;
         DoorExit door;
+        AudioSource sfx_door;
 
         bool EndOpened = true;
 
@@ -26,6 +28,7 @@ namespace LowLevelGenerator.Scripts
         {
             anim = GetComponent<Animator>();
             door = GetComponent<DoorExit>();
+            sfx_door = GetComponent<AudioSource>();
             doorTrigger.doorExit = this;
         }
 
@@ -59,6 +62,17 @@ namespace LowLevelGenerator.Scripts
             isClosing = false;
             Sections[0].SetActiveSection(this, false);
             OpenDoor();
+        }
+
+        public void PlayVFX()
+        {
+            for(int i = 0; i < vfx_door.Count;i++) vfx_door[i].Play();
+        }
+
+
+        public void PlaySFX()
+        {
+            sfx_door.Play();
         }
     }
 }
