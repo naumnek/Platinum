@@ -75,10 +75,13 @@ namespace Unity.FPS.UI
 
             MenuRoot.SetActive(false);
         }
+
         private void LoadSettings() //загружаем информацию из файлов
         {
             MusicVolume.value = PlayerPrefs.GetFloat("MusicVolume");
+            SetMusicVolume(MusicVolume);
             LookSensitivity.value = PlayerPrefs.GetFloat("LookSensitivity");
+            SetLookSensitivity(LookSensitivity);
         }
 
 

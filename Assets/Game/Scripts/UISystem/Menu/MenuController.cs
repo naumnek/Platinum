@@ -112,6 +112,7 @@ namespace naumnek.FPS
         public void SetLookSensitivity(Slider slider)
         {
             slider.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = slider.value.ToString();
+            PlayerPrefs.SetFloat("LookSensitivity", slider.value);
         }
 
         public void SetQualitySettings(TMP_Dropdown dropdown)
