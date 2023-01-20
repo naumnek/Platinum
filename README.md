@@ -1,3 +1,5 @@
 # Platinum
 3D-FPS for PC.
-<p>Build Prototype: <a href="https://drive.google.com/file/d/1zu9f8eZQViGkVOKGk8xR2NTXi2kmeqOf/view?usp=sharing" title="Download from Google Disk">Google Disk</a>
+Developed as: Own indie
+<p>Build Prototype: <a href="https://naumnek.itch.io/platinum" title="Download from Google Disk">Google Disk</a> <p></a>
+<img src="https://github.com/naumnek/Platinum/blob/main/Platinum.png" alt="альтернативный текст">
